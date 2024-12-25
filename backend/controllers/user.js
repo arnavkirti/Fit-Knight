@@ -4,6 +4,15 @@ const { JWT_SECRET } = require("../config/config");
 
 exports.userSignup = async (req, res) => {
   try {
+    // validate with zod
+    const validationResult = User.validateUser(req.body);
+    if (!validationResult.success) {
+      return res.json({
+        error: "Validation failed",
+        details: validationResult.error.errors,
+      });
+    }
+
     const { username, password, profilePicture, role, fitnessDetails } =
       req.body;
 
