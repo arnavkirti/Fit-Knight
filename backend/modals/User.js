@@ -27,13 +27,17 @@ const userZodSchema = z.object({
     .optional(),
 });
 
-// mongoDB
+// mongoDB  
 const userSchema = new mongoose.Schema(
   {
     username: { type: String, unique: true, required: true },
     password: { type: String, required: true },
     profilePicture: { type: String, default: "default.png" },
     role: { type: String, enum: ["BuddyFinder", "Organizer"], required: true },
+    location: {
+      type: { type: String, default: 'Point' },
+      coordinates: [Number]
+    },
     fitnessDetails: {
       fitnessGoals: String,
       workoutPreferences: [String],

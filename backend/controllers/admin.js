@@ -1,6 +1,6 @@
 const User = require("../modals/User");
 const jwt = require("jsonwebtoken");
-const { JWT_SECRET } = require("../config/config");
+require("dotenv").config();
 
 exports.adminSignup = async (req, res) => {
   try {
@@ -39,9 +39,13 @@ exports.adminLogin = async (req, res) => {
       return res.status(401).json({ error: "Invalid username or password" });
     }
 
-    const token = jwt.sign({ id: admin._id, role: admin.role }, JWT_SECRET, {
-      expiresIn: "1h",
-    });
+    const token = jwt.sign(
+      { id: admin._id, role: admin.role },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1h",
+      }
+    );
     res.status(200).json({ message: "Login successful", token });
   } catch (err) {
     res.status(500).json({ error: "Login error", details: err.message });
