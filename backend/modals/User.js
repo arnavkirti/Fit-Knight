@@ -18,16 +18,19 @@ const userZodSchema = z.object({
       availability: z.string().time().optional(),
     })
     .optional(),
-  groupDetails: z
-    .object({
-      activityType: z.string().optional(),
-      location: z.string().optional(),
-      schedule: z.string().optional(),
-    })
+  groups: z
+    .array(
+      z.object({
+        activityType: z.string().optional(),
+        location: z.string().optional(),
+        schedule: z.string().optional(),
+        members: z.array(z.string()).optional(),
+      })
+    )
     .optional(),
 });
 
-// mongoDB  
+// mongoDB
 const userSchema = new mongoose.Schema(
   {
     username: { type: String, unique: true, required: true },
@@ -35,19 +38,22 @@ const userSchema = new mongoose.Schema(
     profilePicture: { type: String, default: "default.png" },
     role: { type: String, enum: ["BuddyFinder", "Organizer"], required: true },
     location: {
-      type: { type: String, default: 'Point' },
-      coordinates: [Number]
+      type: { type: String, default: "Point" },
+      coordinates: [Number],
     },
     fitnessDetails: {
       fitnessGoals: String,
       workoutPreferences: [String],
       availability: String,
     },
-    groupDetails: {
-      activityType: String,
-      location: String,
-      schedule: String,
-    },
+    groups: [
+      {
+        activityType: String,
+        location: String,
+        schedule: String,
+        members: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+      },
+    ],
   },
   { timestamps: true }
 );
