@@ -52,6 +52,17 @@ const userSchema = new mongoose.Schema(
         location: String,
         schedule: String,
         members: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+        joinRequests: [
+          {
+            userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+            requestDate: { type: Date, default: Date.now },
+            status: {
+              type: String,
+              enum: ["pending", "accepted", "rejected"],
+              default: "pending",
+            },
+          },
+        ],
       },
     ],
   },

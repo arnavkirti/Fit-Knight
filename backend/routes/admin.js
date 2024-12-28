@@ -18,7 +18,7 @@ router.post("/login", adminLogin);
 //group routes
 router.post("/add-group", verifyAdminToken, addGroup);
 router.get("/all-groups", verifyAdminToken, getAllGroups);
-router.put("/update-group", updateGroupDetails);
+router.put("/update-group", verifyAdminToken, updateGroupDetails);
 router.get("/group-details", getGroupDetails);
 router.get("/join-requests", getJoinRequests);
 

@@ -91,3 +91,76 @@ exports.getAllGroups = async (req, res) => {
       .json({ error: "Error fetching groups", details: err.message });
   }
 };
+
+exports.updateGroupDetails = async (req, res) => {
+  try {
+    const adminId = req.adminId;
+    const { groupId, updatedGroupDetails } = req.body;
+
+    const admin = await User.findById(adminId);
+    if (!admin || admin.role !== "Organizer") {
+      return res.status(404).json({ error: "Admin not found or invalid role" });
+    }
+    const group = admin.groups.id(groupId);
+    if (!group) {
+      return res.status(404).json({ error: "Group not found" });
+    }
+
+    Object.assign(group, updatedGroupDetails);
+    await admin.save();
+
+    res.json({ message: "Group updated successfully", group });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ error: "Error updating group", details: err.message });
+  }
+};
+
+exports.getGroupDetails = async (req, res) => {
+  try {
+    const adminId = req.adminId;
+    const { groupId } = req.query;
+
+    const admin = await User.findById(adminId);
+    if (!admin || admin.role !== "Organizer") {
+      return res.status(404).json({ error: "Admin not found or invalid role" });
+    }
+
+    const group = admin.groups.id(groupId);
+    if (!group) {
+      return res.status(404).json({ error: "Group not found" });
+    }
+
+    res.json(group);
+  } catch (err) {
+    res
+      .status(500)
+      .json({ error: "Error fetching group details", details: err.message });
+  }
+};
+
+exports.getJoinRequests = async (req, res) => {
+  try {
+    const adminId = req.adminId;
+    const { groupId } = req.query;
+
+    const admin = await User.findById(adminId);
+    if (!admin || admin.role !== "Organizer") {
+      return res.status(404).json({ error: "Admin not found or invalid role" });
+    }
+
+    const group = admin.groups.id(groupId);
+    if (!group) {
+      return res.status(404).json({ error: "Group not found" });
+    }
+
+    const joinRequests = group.joinRequests || [];
+
+    res.json({ joinRequests });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ error: "Error fetching join requests", details: err.message });
+  }
+};
