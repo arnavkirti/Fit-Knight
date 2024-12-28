@@ -7,6 +7,7 @@ const {
   updateGroupDetails,
   addGroup,
   getAllGroups,
+  deleteGroup,
 } = require("../controllers/admin");
 const { verifyAdminToken } = require("../middleware/authMiddleware");
 const router = express.Router();
@@ -21,5 +22,6 @@ router.get("/all-groups", verifyAdminToken, getAllGroups);
 router.put("/update-group", verifyAdminToken, updateGroupDetails);
 router.get("/group-details", getGroupDetails);
 router.get("/join-requests", getJoinRequests);
+router.delete("/delete-group", deleteGroup);
 
 module.exports = router;

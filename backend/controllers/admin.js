@@ -164,3 +164,29 @@ exports.getJoinRequests = async (req, res) => {
       .json({ error: "Error fetching join requests", details: err.message });
   }
 };
+
+exports.deleteGroup = async (req, res) => {
+  try {
+    const adminId = req.adminId;
+    const { groupId } = req.body;
+
+    const admin = await User.findById(adminId);
+    if (!admin || admin.role !== "Organizer") {
+      return res.status(404).json({ error: "Admin not found or invalid role" });
+    }
+
+    const group = admin.groups.id(groupId);
+    if (!group) {
+      return res.status(404).json({ error: "Group not found" });
+    }
+
+    admin.groups.pull(groupId);
+    await admin.save();
+
+    res.json({ message: "Group deleted successfully" });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ error: "Error deleting group", details: err.message });
+  }
+};
