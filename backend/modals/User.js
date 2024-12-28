@@ -9,13 +9,17 @@ const userZodSchema = z.object({
     .min(3, "Username must be at least 3 characters")
     .max(20, "Username cannot exceed 20 characters"),
   password: z.string().min(6, "Password must be at least 6 characters"),
-  profilePicture: z.string().optional(),
+  profilePicture: z.string().url().optional(),
   role: z.enum(["BuddyFinder", "Organizer"], "Invalid role"),
+  location: z.object({
+    type: z.string().default("Point"),
+    coordinates: z.array(z.number()).min(2).max(2),
+  }),
   fitnessDetails: z
     .object({
       fitnessGoals: z.string().optional(),
       workoutPreferences: z.array(z.string()).optional(),
-      availability: z.string().time().optional(),
+      availability: z.string().optional(),
     })
     .optional(),
   groups: z
@@ -25,11 +29,17 @@ const userZodSchema = z.object({
         location: z.string().optional(),
         schedule: z.string().optional(),
         members: z.array(z.string()).optional(),
-        joinRequests: z.array(z.object({
-          userId:z.string().refine((val)=>mongoose.Types.ObjectId.isValid(val)), 
-          requestDate:z.date().default(()=> new Date()),
-          status: z.enum(["pending", "accepted", "rejected"]).default("pending"),
-        })),
+        joinRequests: z.array(
+          z.object({
+            userId: z
+              .string()
+              .refine((val) => mongoose.Types.ObjectId.isValid(val)),
+            requestDate: z.date().default(() => new Date()),
+            status: z
+              .enum(["pending", "accepted", "rejected"])
+              .default("pending"),
+          })
+        ),
       })
     )
     .optional(),
@@ -40,7 +50,7 @@ const userSchema = new mongoose.Schema(
   {
     username: { type: String, unique: true, required: true },
     password: { type: String, required: true },
-    profilePicture: { type: String, default: "default.png" },
+    profilePicture: { type: String, default: "https://nftcrypto.io/wp-content/uploads/2023/05/2023-05-18-17_57_18-The-Journey-of-an-NFT-Avatar-Word-Product-Activation-Failed.png" },
     role: { type: String, enum: ["BuddyFinder", "Organizer"], required: true },
     location: {
       type: { type: String, default: "Point" },
