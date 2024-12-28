@@ -25,6 +25,11 @@ const userZodSchema = z.object({
         location: z.string().optional(),
         schedule: z.string().optional(),
         members: z.array(z.string()).optional(),
+        joinRequests: z.array(z.object({
+          userId:z.string().refine((val)=>mongoose.Types.ObjectId.isValid(val)), 
+          requestDate:z.date().default(()=> new Date()),
+          status: z.enum(["pending", "accepted", "rejected"]).default("pending"),
+        })),
       })
     )
     .optional(),
