@@ -22,6 +22,6 @@ router.get("/all-groups", verifyAdminToken, getAllGroups);
 router.put("/update-group", verifyAdminToken, updateGroupDetails);
 router.get("/group-details", getGroupDetails);
 router.get("/join-requests", getJoinRequests);
-router.delete("/delete-group", deleteGroup);
+router.delete("/delete-group", verifyAdminToken, deleteGroup);
 
 module.exports = router;

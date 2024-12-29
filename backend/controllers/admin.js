@@ -1,4 +1,5 @@
 const User = require("../modals/User");
+const Group = require("../modals/Group");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
@@ -64,7 +65,12 @@ exports.addGroup = async (req, res) => {
       return res.status(404).json({ error: "Admin not found or invalid role" });
     }
 
-    admin.groups.push(groupDetails);
+    const group = new Group({
+      ...groupDetails,
+      organizer: adminId,
+    });
+    admin.groups.push(group._id);
+    await group.save();
     await admin.save();
 
     res
@@ -79,7 +85,10 @@ exports.getAllGroups = async (req, res) => {
   try {
     const adminId = req.adminId;
 
-    const admin = await User.findById(adminId).select("groups");
+    const admin = await User.findById(adminId).populate(
+      "groups",
+      "-joinRequests"
+    );
     if (!admin || admin.role !== "Organizer") {
       return res.status(404).json({ error: "Admin not found or invalid role" });
     }
@@ -97,17 +106,24 @@ exports.updateGroupDetails = async (req, res) => {
     const adminId = req.adminId;
     const { groupId, updatedGroupDetails } = req.body;
 
+    if (!groupId || !updatedGroupDetails) {
+      return res
+        .status(400)
+        .json({ error: "Missing groupId or updatedGroupDetails" });
+    }
+
     const admin = await User.findById(adminId);
     if (!admin || admin.role !== "Organizer") {
       return res.status(404).json({ error: "Admin not found or invalid role" });
     }
-    const group = admin.groups.id(groupId);
-    if (!group) {
+
+    const group = await Group.findById(groupId);
+    if (!group || group.organizer.toString() !== adminId) {
       return res.status(404).json({ error: "Group not found" });
     }
 
     Object.assign(group, updatedGroupDetails);
-    await admin.save();
+    await group.save();
 
     res.json({ message: "Group updated successfully", group });
   } catch (err) {
@@ -119,20 +135,18 @@ exports.updateGroupDetails = async (req, res) => {
 
 exports.getGroupDetails = async (req, res) => {
   try {
-    const adminId = req.adminId;
     const { groupId } = req.query;
-
-    const admin = await User.findById(adminId);
-    if (!admin || admin.role !== "Organizer") {
-      return res.status(404).json({ error: "Admin not found or invalid role" });
+    if (!groupId) {
+      return res.status(400).json({ error: "Group ID is required" });
     }
-
-    const group = admin.groups.id(groupId);
+    const group = await Group.findById(groupId)
+      .populate("members", "username profilePicture")
+      .populate("organizer", "username profilePicture");
     if (!group) {
       return res.status(404).json({ error: "Group not found" });
     }
 
-    res.json(group);
+    res.json({ group });
   } catch (err) {
     res
       .status(500)
@@ -142,15 +156,15 @@ exports.getGroupDetails = async (req, res) => {
 
 exports.getJoinRequests = async (req, res) => {
   try {
-    const adminId = req.adminId;
     const { groupId } = req.query;
-
-    const admin = await User.findById(adminId);
-    if (!admin || admin.role !== "Organizer") {
-      return res.status(404).json({ error: "Admin not found or invalid role" });
+    if (!groupId) {
+      return res.status(400).json({ error: "Group ID is required" });
     }
+    const group = await Group.findById(groupId).populate(
+      "joinRequests.userId",
+      "username profilePicture"
+    );
 
-    const group = admin.groups.id(groupId);
     if (!group) {
       return res.status(404).json({ error: "Group not found" });
     }
@@ -170,18 +184,20 @@ exports.deleteGroup = async (req, res) => {
     const adminId = req.adminId;
     const { groupId } = req.body;
 
-    const admin = await User.findById(adminId);
-    if (!admin || admin.role !== "Organizer") {
-      return res.status(404).json({ error: "Admin not found or invalid role" });
+    if (!groupId) {
+      return res.status(400).json({ error: "Group ID is required" });
     }
 
-    const group = admin.groups.id(groupId);
-    if (!group) {
-      return res.status(404).json({ error: "Group not found" });
+    const group = await Group.findById(groupId);
+    if (!group || group.organizer.toString() !== adminId) {
+      return res
+        .status(404)
+        .json({ error: "Group not found or not authorized to delete" });
     }
 
-    admin.groups.pull(groupId);
-    await admin.save();
+    await Group.findByIdAndDelete(groupId);
+
+    await User.findByIdAndUpdate(adminId, { $pull: { groups: groupId } });
 
     res.json({ message: "Group deleted successfully" });
   } catch (err) {

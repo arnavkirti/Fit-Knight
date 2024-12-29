@@ -22,27 +22,7 @@ const userZodSchema = z.object({
       availability: z.string().optional(),
     })
     .optional(),
-  groups: z
-    .array(
-      z.object({
-        activityType: z.string().optional(),
-        location: z.string().optional(),
-        schedule: z.string().optional(),
-        members: z.array(z.string()).optional(),
-        joinRequests: z.array(
-          z.object({
-            userId: z
-              .string()
-              .refine((val) => mongoose.Types.ObjectId.isValid(val)),
-            requestDate: z.date().default(() => new Date()),
-            status: z
-              .enum(["pending", "accepted", "rejected"])
-              .default("pending"),
-          })
-        ),
-      })
-    )
-    .optional(),
+  groups: z.array((val) => mongoose.Types.ObjectId.isValid(val)),
 });
 
 // mongoDB
@@ -50,7 +30,11 @@ const userSchema = new mongoose.Schema(
   {
     username: { type: String, unique: true, required: true },
     password: { type: String, required: true },
-    profilePicture: { type: String, default: "https://nftcrypto.io/wp-content/uploads/2023/05/2023-05-18-17_57_18-The-Journey-of-an-NFT-Avatar-Word-Product-Activation-Failed.png" },
+    profilePicture: {
+      type: String,
+      default:
+        "https://nftcrypto.io/wp-content/uploads/2023/05/2023-05-18-17_57_18-The-Journey-of-an-NFT-Avatar-Word-Product-Activation-Failed.png",
+    },
     role: { type: String, enum: ["BuddyFinder", "Organizer"], required: true },
     location: {
       type: { type: String, default: "Point" },
@@ -61,25 +45,7 @@ const userSchema = new mongoose.Schema(
       workoutPreferences: [String],
       availability: String,
     },
-    groups: [
-      {
-        activityType: String,
-        location: String,
-        schedule: String,
-        members: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-        joinRequests: [
-          {
-            userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-            requestDate: { type: Date, default: Date.now },
-            status: {
-              type: String,
-              enum: ["pending", "accepted", "rejected"],
-              default: "pending",
-            },
-          },
-        ],
-      },
-    ],
+    groups: [{ type: mongoose.Schema.Types.ObjectId, ref: "Group" }],
   },
   { timestamps: true }
 );
