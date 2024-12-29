@@ -65,7 +65,7 @@ exports.userLogin = async (req, res) => {
 exports.getRecommendedBuddies = async (req, res) => {
   try {
     const { username } = req.body;
-    const user = await User.findOne({username});
+    const user = await User.findOne({ username });
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
@@ -141,5 +141,33 @@ exports.getAvailableGroups = async (req, res) => {
     res
       .status(500)
       .json({ error: "Error fetching available groups", details: err.message });
+  }
+};
+
+exports.joinGroup = async (req, res) => {
+  try {
+    const { groupId } = req.body;
+    const userId = req.userId;
+
+    const group = await Group.findById(groupId);
+    if (!group) {
+      return res.status(404).json({ error: "Group not found" });
+    }
+
+    const existingRequest = group.joinRequests.find(
+      (request) => request.user.toString() === userId
+    );
+    if (existingRequest) {
+      return res.status(400).json({ error: "Request already exists" });
+    }
+
+    group.joinRequests.push({ user: userId });
+    await group.save();
+
+    res.json({ message: "Request sent successfully" });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ error: "Error sending request", details: err.message });
   }
 };

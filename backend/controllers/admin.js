@@ -206,3 +206,42 @@ exports.deleteGroup = async (req, res) => {
       .json({ error: "Error deleting group", details: err.message });
   }
 };
+
+exports.updateJoinRequest = async (req, res) => {
+  try {
+    const adminId = req.adminId;
+    const { groupId, requestId } = req.params;
+    const { status } = req.body;
+
+    if (!adminId) {
+      return res.status(401).json({ error: "Unauthorized access" });
+    }
+
+    const group = await Group.findById(groupId);
+    if (!group) {
+      return res.status(404).json({ error: "Group not found" });
+    }
+
+    const joinRequest = group.joinRequests.id(requestId);
+    if (!joinRequest) {
+      return res.status(404).json({ error: "Request not found" });
+    }
+
+    if (status === "accept") {
+      group.members.push({ userId: joinRequest.userId });
+      joinRequest.status = "accepted";
+    } else if ((status = "reject")) {
+      joinRequest.status = "rejected";
+    } else {
+      return res.status(400).json({ error: "Invalid status" });
+    }
+
+    await group.save();
+
+    res.json({ message: "Request updated successfully" });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ error: "Error updating request", details: err.message });
+  }
+};

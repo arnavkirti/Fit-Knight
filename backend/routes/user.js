@@ -15,4 +15,5 @@ router.post("/login", userLogin);
 router.get("/recommended-buddies", getRecommendedBuddies);
 router.get("/available-groups", getAvailableGroups);
 
+router.post("/join-group", verifyUserToken, joinGroup);
 module.exports = router;
