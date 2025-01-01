@@ -171,3 +171,31 @@ exports.joinGroup = async (req, res) => {
       .json({ error: "Error sending request", details: err.message });
   }
 };
+
+exports.userProfile = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    res.status(200).json({
+      //personal info
+      username: user.username,
+      profilePicture: user.profilePicture,
+      fitnessGoals: user.fitnessDetails.fitnessGoals,
+      about: user.about,
+
+      //Fitness history
+      achivements: user.fitnessDetails.achievements,
+
+      //contact info // optional visibility based on privacy settings
+      email: user.email,
+      phone: user.phone,
+    });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ error: "Error fetching user profile", details: err.message });
+  }
+};

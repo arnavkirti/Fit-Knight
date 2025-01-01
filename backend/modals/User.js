@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const { z } = require("zod");
+const { addChain } = require("viem/actions");
 
 // userSchema
 const userZodSchema = z.object({
@@ -9,6 +10,11 @@ const userZodSchema = z.object({
     .min(3, "Username must be at least 3 characters")
     .max(20, "Username cannot exceed 20 characters"),
   password: z.string().min(6, "Password must be at least 6 characters"),
+  email: z.string().email(),
+  phone: z
+    .string()
+    .min(10, { message: "Must be a valid mobile number" })
+    .optional(),
   profilePicture: z.string().url().optional(),
   role: z.enum(["BuddyFinder", "Organizer"], "Invalid role"),
   location: z.object({
@@ -20,8 +26,10 @@ const userZodSchema = z.object({
       fitnessGoals: z.string().optional(),
       workoutPreferences: z.array(z.string()).optional(),
       availability: z.string().optional(),
+      achievements: z.array(z.string()).optional(),
     })
     .optional(),
+  about: z.string().optional(),
   groups: z.array((val) => mongoose.Types.ObjectId.isValid(val)),
 });
 
@@ -30,6 +38,8 @@ const userSchema = new mongoose.Schema(
   {
     username: { type: String, unique: true, required: true },
     password: { type: String, required: true },
+    email: { type: String, unique: true, required: true },
+    phone: { type: String, unique: true, required: true },
     profilePicture: {
       type: String,
       default:
@@ -44,7 +54,9 @@ const userSchema = new mongoose.Schema(
       fitnessGoals: String,
       workoutPreferences: [String],
       availability: String,
+      achievements: [String],
     },
+    about: { type: String, default: "" },
     groups: [{ type: mongoose.Schema.Types.ObjectId, ref: "Group" }],
   },
   { timestamps: true }

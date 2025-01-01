@@ -14,14 +14,14 @@ exports.adminSignup = async (req, res) => {
       });
     }
 
-    const { username, password, profilePicture, groupDetails } = req.body;
+    const { username, password, profilePicture} = req.body;
 
     const newAdmin = new User({
       username,
       password,
       profilePicture,
       role: "Organizer",
-      groupDetails,
+      groups: [],
     });
 
     await newAdmin.save();
@@ -245,3 +245,26 @@ exports.updateJoinRequest = async (req, res) => {
       .json({ error: "Error updating request", details: err.message });
   }
 };
+
+exports.adminProfile = async (req, res) => {
+  try {
+    const adminId = req.adminId;
+    const admin = await User.findById(adminId);
+    if (!admin) {
+      return res.status(404).json({ error: "Admin not found" });
+    }
+    res.status(200).json({
+      // personal info
+      username: admin.username,
+      profilePicture: admin.profilePicture,
+      // goals
+
+      //contact info
+      email: admin.email,
+      phone: admin.phone,
+      
+    })
+  } catch (err) {
+    
+  }
+}
