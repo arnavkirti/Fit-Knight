@@ -3,10 +3,12 @@ import { useParams } from "react-router-dom";
 import axiosInstance from "@/axiosConfig";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useNavigate } from "react-router-dom";
 
 const AuthPage = () => {
   const { role } = useParams();
   const [isLogin, setIsLogin] = useState(true);
+  const navigate = useNavigate();
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -18,8 +20,14 @@ const AuthPage = () => {
         url,
         Object.fromEntries(formData)
       );
+      localStorage.setItem("role", response.data.role);
+      localStorage.setItem("token", response.data.token);
+      navigate(
+        response.data.role === "user"
+          ? "/api/user/dashboard"
+          : "/api/admin/dashboard"
+      );
       console.log(response.data);
-      console.log(Object.fromEntries(formData));
     } catch (error) {
       console.error(
         "Error:",
@@ -53,6 +61,11 @@ const AuthPage = () => {
               required
               className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+            <Input
+              name="role"
+              type="hidden"
+              value={role === "user" ? "BuddyFinder" : "Organizer"}
+            />
           </div>
 
           {!isLogin && (
@@ -75,11 +88,6 @@ const AuthPage = () => {
                   className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
-              <Input
-                name="role"
-                type="hidden"
-                value={role === "user" ? "BuddyFinder" : "Organizer"}
-              />
             </>
           )}
           <Button
