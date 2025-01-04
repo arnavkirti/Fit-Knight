@@ -6,9 +6,10 @@ const {
   getJoinRequests,
   updateGroupDetails,
   addGroup,
-  getAllGroups,
   deleteGroup,
   adminProfile,
+  getGroup,
+  updateJoinRequest,
 } = require("../controllers/admin");
 const { verifyAdminToken } = require("../middleware/authMiddleware");
 const router = express.Router();
@@ -17,16 +18,22 @@ const router = express.Router();
 router.post("/signup", adminSignup);
 router.post("/login", adminLogin);
 
-//group routes
-router.post("/add-group", verifyAdminToken, addGroup);
-router.get("/all-groups", verifyAdminToken, getAllGroups);
-router.put("/update-group", verifyAdminToken, updateGroupDetails);
+//dashboard routes
+router.post("/dashboard/add-group", verifyAdminToken, addGroup);
+router.get("/dashboard/group", verifyAdminToken, getGroup);
+router.get("/dashboard/join-requests", getJoinRequests);
+router.post(
+  "/dashboard/update-join-request",
+  verifyAdminToken,
+  updateJoinRequest
+);
+router.delete("/dashboard/delete-group", verifyAdminToken, deleteGroup);
+
+// group routes
 router.get("/group-details", getGroupDetails);
-router.get("/join-requests", getJoinRequests);
-router.delete("/delete-group", verifyAdminToken, deleteGroup);
-router.get("/join-requests/:requestId", verifyAdminToken, updateJoinRequest);
+router.put("/update-group", verifyAdminToken, updateGroupDetails);
 
 //profile routes
-router.get("/profile",verifyAdminToken, adminProfile);
+router.get("/profile", verifyAdminToken, adminProfile);
 
 module.exports = router;

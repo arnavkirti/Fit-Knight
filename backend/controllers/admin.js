@@ -1,8 +1,10 @@
 const User = require("../modals/User");
 const Group = require("../modals/Group");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 require("dotenv").config();
 
+// auth routes
 exports.adminSignup = async (req, res) => {
   try {
     // validate with zod
@@ -14,14 +16,14 @@ exports.adminSignup = async (req, res) => {
       });
     }
 
-    const { username, password, profilePicture} = req.body;
+    const { username, password, email, phone, role } = req.body;
 
     const newAdmin = new User({
+      email,
+      phone,
       username,
       password,
-      profilePicture,
-      role: "Organizer",
-      groups: [],
+      role,
     });
 
     await newAdmin.save();
@@ -35,7 +37,7 @@ exports.adminSignup = async (req, res) => {
 
 exports.adminLogin = async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { username, password, role } = req.body;
     const admin = await User.findOne({ username });
 
     if (!admin || !(await bcrypt.compare(password, admin.password))) {
@@ -49,108 +51,72 @@ exports.adminLogin = async (req, res) => {
         expiresIn: "1h",
       }
     );
-    res.status(200).json({ message: "Login successful", token });
+    res.status(200).json({ message: "Login successful", token, role });
   } catch (err) {
     res.status(500).json({ error: "Login error", details: err.message });
   }
 };
 
+// dashboard routes
 exports.addGroup = async (req, res) => {
   try {
     const adminId = req.adminId;
     const { groupDetails } = req.body;
 
+    console.log("Request body:", req.body);
+
+    if (
+      !groupDetails ||
+      typeof groupDetails !== "object" ||
+      !Object.keys(groupDetails).length
+    ) {
+      return res.status(400).json({ error: "Invalid group details" });
+    }
+
     const admin = await User.findById(adminId);
     if (!admin || admin.role !== "Organizer") {
       return res.status(404).json({ error: "Admin not found or invalid role" });
     }
 
-    const group = new Group({
+    console.log("Group details:", groupDetails);
+
+    // Zod validation
+    const validationResult = Group.validateGroup(groupDetails);
+    if (!validationResult.success) {
+      return res.status(400).json({ error: validationResult.error.errors });
+    }
+
+    const newGroup = new Group({
       ...groupDetails,
       organizer: adminId,
     });
-    admin.groups.push(group._id);
-    await group.save();
+
+    admin.group = newGroup._id;
+    await newGroup.save();
     await admin.save();
 
     res
       .status(200)
-      .json({ message: "Group added successfully", group: groupDetails });
+      .json({ message: "Group added successfully", group: newGroup });
   } catch (err) {
+    console.error("Error adding group:", err.message);
     res.status(500).json({ error: "Error adding group", details: err.message });
   }
 };
 
-exports.getAllGroups = async (req, res) => {
+exports.getGroup = async (req, res) => {
   try {
     const adminId = req.adminId;
-
-    const admin = await User.findById(adminId).populate(
-      "groups",
-      "-joinRequests"
-    );
+    const admin = await User.findById(adminId).populate("group");
     if (!admin || admin.role !== "Organizer") {
       return res.status(404).json({ error: "Admin not found or invalid role" });
     }
 
-    res.json(admin.groups);
+    res.json({ groups: admin.group });
   } catch (err) {
     res
       .status(500)
       .json({ error: "Error fetching groups", details: err.message });
-  }
-};
-
-exports.updateGroupDetails = async (req, res) => {
-  try {
-    const adminId = req.adminId;
-    const { groupId, updatedGroupDetails } = req.body;
-
-    if (!groupId || !updatedGroupDetails) {
-      return res
-        .status(400)
-        .json({ error: "Missing groupId or updatedGroupDetails" });
-    }
-
-    const admin = await User.findById(adminId);
-    if (!admin || admin.role !== "Organizer") {
-      return res.status(404).json({ error: "Admin not found or invalid role" });
-    }
-
-    const group = await Group.findById(groupId);
-    if (!group || group.organizer.toString() !== adminId) {
-      return res.status(404).json({ error: "Group not found" });
-    }
-
-    Object.assign(group, updatedGroupDetails);
-    await group.save();
-
-    res.json({ message: "Group updated successfully", group });
-  } catch (err) {
-    res
-      .status(500)
-      .json({ error: "Error updating group", details: err.message });
-  }
-};
-
-exports.getGroupDetails = async (req, res) => {
-  try {
-    const { groupId } = req.query;
-    if (!groupId) {
-      return res.status(400).json({ error: "Group ID is required" });
-    }
-    const group = await Group.findById(groupId)
-      .populate("members", "username profilePicture")
-      .populate("organizer", "username profilePicture");
-    if (!group) {
-      return res.status(404).json({ error: "Group not found" });
-    }
-
-    res.json({ group });
-  } catch (err) {
-    res
-      .status(500)
-      .json({ error: "Error fetching group details", details: err.message });
   }
 };
 
@@ -246,6 +212,61 @@ exports.updateJoinRequest = async (req, res) => {
   }
 };
 
+// group routes
+exports.getGroupDetails = async (req, res) => {
+  try {
+    const { groupId } = req.query;
+    if (!groupId) {
+      return res.status(400).json({ error: "Group ID is required" });
+    }
+    const group = await Group.findById(groupId)
+      .populate("members", "username profilePicture")
+      .populate("organizer", "username profilePicture");
+    if (!group) {
+      return res.status(404).json({ error: "Group not found" });
+    }
+
+    res.json({ group });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ error: "Error fetching group details", details: err.message });
+  }
+};
+
+exports.updateGroupDetails = async (req, res) => {
+  try {
+    const adminId = req.adminId;
+    const { groupId, updatedGroupDetails } = req.body;
+
+    if (!groupId || !updatedGroupDetails) {
+      return res
+        .status(400)
+        .json({ error: "Missing groupId or updatedGroupDetails" });
+    }
+
+    const admin = await User.findById(adminId);
+    if (!admin || admin.role !== "Organizer") {
+      return res.status(404).json({ error: "Admin not found or invalid role" });
+    }
+
+    const group = await Group.findById(groupId);
+    if (!group || group.organizer.toString() !== adminId) {
+      return res.status(404).json({ error: "Group not found" });
+    }
+
+    Object.assign(group, updatedGroupDetails);
+    await group.save();
+
+    res.json({ message: "Group updated successfully", group });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ error: "Error updating group", details: err.message });
+  }
+};
+
+// profile routes
 exports.adminProfile = async (req, res) => {
   try {
     const adminId = req.adminId;
@@ -262,9 +283,10 @@ exports.adminProfile = async (req, res) => {
       //contact info
       email: admin.email,
       phone: admin.phone,
-      
-    })
+    });
   } catch (err) {
-    
+    res
+      .status(500)
+      .json({ error: "Error fetching admin profile", details: err.message });
   }
-}
+};

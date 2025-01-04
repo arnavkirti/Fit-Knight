@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const { z } = require("zod");
-const { addChain } = require("viem/actions");
 
 // userSchema
 const userZodSchema = z.object({
@@ -17,10 +16,12 @@ const userZodSchema = z.object({
     .optional(),
   profilePicture: z.string().url().optional(),
   role: z.enum(["BuddyFinder", "Organizer"], "Invalid role"),
-  location: z.object({
-    type: z.string().default("Point"),
-    coordinates: z.array(z.number()).min(2).max(2),
-  }),
+  location: z
+    .object({
+      type: z.string().default("Point"),
+      coordinates: z.array(z.number()).min(2).max(2),
+    })
+    .optional(),
   fitnessDetails: z
     .object({
       fitnessGoals: z.string().optional(),
@@ -30,7 +31,11 @@ const userZodSchema = z.object({
     })
     .optional(),
   about: z.string().optional(),
-  groups: z.array((val) => mongoose.Types.ObjectId.isValid(val)),
+  group: z
+    .string()
+    .regex(/^[0-9a-fA-F]{24}$/, "Invalid ObjectId format")
+    .optional()
+    .nullable(),
 });
 
 // mongoDB
@@ -57,13 +62,36 @@ const userSchema = new mongoose.Schema(
       achievements: [String],
     },
     about: { type: String, default: "" },
-    groups: [{ type: mongoose.Schema.Types.ObjectId, ref: "Group" }],
+    group: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Group",
+      default: null,
+    },
   },
   { timestamps: true }
 );
 
 // Hashing password before saving
 userSchema.pre("save", async function (next) {
+  if (this.role === "Organizer" && this.isModified("group")) {
+    const existingGroup = await mongoose.models.Group.findOne({
+      organizer: this._id,
+    });
+    if (existingGroup) {
+      throw new Error("An Organizer can only create one group.");
+    }
+  }
+
+  if (this.role === "BuddyFinder" && this.isModified("group")) {
+    const existingUserInGroup = await mongoose.models.User.findOne({
+      _id: this._id,
+      group: { $exists: true },
+    });
+    if (existingUserInGroup) {
+      throw new Error("A user can only be part of one group at a time.");
+    }
+  }
+
   if (!this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, 10);
   next();

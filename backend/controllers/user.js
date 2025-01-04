@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
+// auth routes
 exports.userSignup = async (req, res) => {
   try {
     // validate with zod
@@ -14,23 +15,14 @@ exports.userSignup = async (req, res) => {
       });
     }
 
-    const {
-      username,
-      password,
-      profilePicture,
-      role,
-      fitnessDetails,
-      location,
-    } = req.body;
+    const { email, username, password, phone, role } = req.body;
 
     const newUser = new User({
+      email,
       username,
       password,
+      phone,
       role,
-      profilePicture,
-      location,
-      role: "BuddyFinder",
-      fitnessDetails,
     });
 
     await newUser.save();
@@ -42,7 +34,7 @@ exports.userSignup = async (req, res) => {
 
 exports.userLogin = async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { username, password, role } = req.body;
     const user = await User.findOne({ username });
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
@@ -56,12 +48,13 @@ exports.userLogin = async (req, res) => {
         expiresIn: "1h",
       }
     );
-    res.status(200).json({ message: "Login successful", token });
+    res.status(200).json({ message: "Login successful", token, role });
   } catch (err) {
     res.status(500).json({ error: "Login error", details: err.message });
   }
 };
 
+// dashboard routes
 exports.getRecommendedBuddies = async (req, res) => {
   try {
     const { username } = req.body;
@@ -109,34 +102,50 @@ exports.getRecommendedBuddies = async (req, res) => {
 
 exports.getAvailableGroups = async (req, res) => {
   try {
-    const { activityType, location, maxDistance } = req.query;
+    const userId = req.userId;
+    const { maxDistance } = req.query;
+
+    // validate maxDistance
+    const maxDist = parseInt(maxDistance, 10);
+    if (isNaN(maxDist) || maxDist <= 0) {
+      return res.status(400).json({ error: "Invalid maxDistance value" });
+    }
+
+    // find user
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const location = user.location?.coordinates;
+    if (!location || location.length !== 2) {
+      return res
+        .status(400)
+        .json({ error: "Invalid or missing user location" });
+    }
 
     const query = {
-      role: "Organizer",
-      ...(activityType && { "groups.activityType": activityType }),
-    };
-
-    if (location && maxDistance) {
-      query["groups.location"] = {
+      location: {
         $near: {
           $geometry: {
             type: "Point",
-            coordinates: location.split(",").map(Number),
+            coordinates: location,
           },
-          $maxDistance: parseInt(maxDistance),
+          $maxDistance: maxDist,
         },
-      };
-    }
+      },
+    };
 
-    const organizers = await User.find(query).select("groups");
-
-    const allGroups = organizers.flatMap((user) =>
-      user.groups.filter(
-        (group) => !activityType || group.activityType === activityType
-      )
+    const groups = await Group.find(query).populate(
+      "organizer",
+      "username profilePicture"
     );
 
-    res.json(allGroups);
+    if (groups.length === 0) {
+      return res.status(200).json({ message: "No groups found", groups: [] });
+    }
+
+    res.json(groups);
   } catch (err) {
     res
       .status(500)
@@ -148,6 +157,22 @@ exports.joinGroup = async (req, res) => {
   try {
     const { groupId } = req.body;
     const userId = req.userId;
+
+    if (!mongoose.Types.ObjectId.isValid(groupId)) {
+      return res.status(400).json({ error: "Invalid groupId format" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    if (user.group) {
+      return res.status(400).json({
+        error:
+          "You are already a member of a group. Leave your current group to join another.",
+      });
+    }
 
     const group = await Group.findById(groupId);
     if (!group) {
@@ -172,6 +197,62 @@ exports.joinGroup = async (req, res) => {
   }
 };
 
+exports.getUserGroup = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const user = await User.findById(userId).populate("group");
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    if (!user.group) {
+      return res.status(200).json({ message: "User is not part of any group" });
+    }
+
+    res.status(200).json({
+      message: "User is part of a group",
+      group: user.group,
+    });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ error: "Error fetching user group", details: err.message });
+  }
+};
+
+exports.leaveGroup = async (req, res) => {
+  try {
+    const { groupId } = req.body;
+    const userId = req.userId;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const userGroup = user.group.find((group) => group.toString() === groupId);
+    if (!user.group) {
+      return res.status(400).json({ error: "User is not part of any group" });
+    }
+
+    user.group = user.group.filter((group) => group.toString() !== groupId);
+    await user.save();
+
+    const group = await Group.findById(groupId);
+    if (!group) {
+      return res.status(404).json({ error: "Group not found" });
+    }
+    group.members = group.members.filter(
+      (member) => member.toString() !== userId
+    );
+
+    await group.save();
+  } catch (err) {
+    res
+      .status(500)
+      .json({ error: "Error leaving group", details: err.message });
+  }
+};
+
+// profile routes
 exports.userProfile = async (req, res) => {
   try {
     const userId = req.userId;

@@ -6,6 +6,9 @@ const {
   getAvailableGroups,
   userProfile,
   updateUserProfile,
+  joinGroup,
+  getUserGroup,
+  leaveGroup,
 } = require("../controllers/user");
 const { verifyUserToken } = require("../middleware/authMiddleware");
 const router = express.Router();
@@ -14,12 +17,14 @@ const router = express.Router();
 router.post("/signup", userSignup);
 router.post("/login", userLogin);
 
-// group routes
-router.get("/recommended-buddies", getRecommendedBuddies);
-router.get("/available-groups", getAvailableGroups);
-router.post("/join-group", verifyUserToken, joinGroup);
+// dashboard routes
+router.get("/dashboard/recommended-buddies", getRecommendedBuddies);
+router.get("/dashboard/available-groups", verifyUserToken, getAvailableGroups);
+router.get("/dashboard/user-group", verifyUserToken, getUserGroup);
+router.post("/dashboard/join-group", verifyUserToken, joinGroup);
+router.post("/dashboard/leave-group", verifyUserToken, leaveGroup);
 
 // profile routes
 router.get("/profile", verifyUserToken, userProfile);
-router.update("/edit-profile", updateUserProfile);
+// router.put("/edit-profile", updateUserProfile);
 module.exports = router;
