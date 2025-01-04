@@ -1,3 +1,5 @@
+// add logic for location access
+
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import axiosInstance from "@/axiosConfig";
@@ -8,22 +10,49 @@ import { useNavigate } from "react-router-dom";
 const AuthPage = () => {
   const { role } = useParams();
   const [isLogin, setIsLogin] = useState(true);
+  // const [location, setLocation] = useState(null);
   const navigate = useNavigate();
+
+  // const getUserLocation = () => {
+  //   if (navigator.geolocation) {
+  //     navigator.geolocation.getCurrentPosition(
+  //       (position) => {
+  //         const latitude = position.coords.latitude;
+  //         const longitude = position.coords.longitude;
+  //         setLocation([longitude, latitude]);
+  //       },
+  //       (error) => {
+  //         console.error("Error fetching location:", error.message);
+  //         alert("Unable to fetch location. Please enable location access.");
+  //       }
+  //     );
+  //   } else {
+  //     alert("Geolocation is not supported by your browser.");
+  //   }
+  // };
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     const url = `/api/${role}/${isLogin ? "login" : "signup"}`;
     const formData = new FormData(e.target);
 
+    // if (!isLogin && location) {
+    //   formData.append(
+    //     "location",
+    //     JSON.stringify({ type: "Point", coordinates: location })
+    //   );
+    // }
+
     try {
       const response = await axiosInstance.post(
         url,
         Object.fromEntries(formData)
       );
+      console.log(response.data);
       localStorage.setItem("role", response.data.role);
       localStorage.setItem("token", response.data.token);
       navigate(
-        response.data.role === "user"
+        response.data.role === "BuddyFinder"
           ? "/api/user/dashboard"
           : "/api/admin/dashboard"
       );
@@ -88,6 +117,13 @@ const AuthPage = () => {
                   className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
+              <Button
+                type="button"
+                onClick={getUserLocation}
+                className="w-full bg-gray-100 text-blue-600 py-2 px-4 rounded-md hover:bg-gray-200 transition"
+              >
+                Use My Location
+              </Button>
             </>
           )}
           <Button
