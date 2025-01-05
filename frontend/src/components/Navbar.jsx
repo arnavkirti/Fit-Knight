@@ -1,5 +1,6 @@
-// add logic to fetch user profile picture
+// add logic to fetch user profile picture (admin, user)
 
+import axios from "axios";
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 

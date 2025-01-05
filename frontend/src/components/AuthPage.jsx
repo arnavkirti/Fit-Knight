@@ -13,35 +13,35 @@ const AuthPage = () => {
   // const [location, setLocation] = useState(null);
   const navigate = useNavigate();
 
-  // const getUserLocation = () => {
-  //   if (navigator.geolocation) {
-  //     navigator.geolocation.getCurrentPosition(
-  //       (position) => {
-  //         const latitude = position.coords.latitude;
-  //         const longitude = position.coords.longitude;
-  //         setLocation([longitude, latitude]);
-  //       },
-  //       (error) => {
-  //         console.error("Error fetching location:", error.message);
-  //         alert("Unable to fetch location. Please enable location access.");
-  //       }
-  //     );
-  //   } else {
-  //     alert("Geolocation is not supported by your browser.");
-  //   }
-  // };
+  const getUserLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const latitude = position.coords.latitude;
+          const longitude = position.coords.longitude;
+          setLocation([longitude, latitude]);
+        },
+        (error) => {
+          console.error("Error fetching location:", error.message);
+          alert("Unable to fetch location. Please enable location access.");
+        }
+      );
+    } else {
+      alert("Geolocation is not supported by your browser.");
+    }
+  };
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     const url = `/api/${role}/${isLogin ? "login" : "signup"}`;
     const formData = new FormData(e.target);
 
-    // if (!isLogin && location) {
-    //   formData.append(
-    //     "location",
-    //     JSON.stringify({ type: "Point", coordinates: location })
-    //   );
-    // }
+    if (!isLogin && location) {
+      formData.append(
+        "location",
+        JSON.stringify({ type: "Point", coordinates: location })
+      );
+    }
 
     try {
       const response = await axiosInstance.post(

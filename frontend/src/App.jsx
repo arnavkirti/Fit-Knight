@@ -3,6 +3,9 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Landing from "./components/Landing";
 import AuthPage from "./components/AuthPage";
 import Dashboard from "./components/Dashboard";
+import Profile from "./components/Profile";
+import Group from "./components/Group";
+import Notification from "./components/Notification";
 
 function App() {
   return (
@@ -12,6 +15,9 @@ function App() {
         <Route path="/api/:role" element={<AuthPage />} />
         <Route path="/api/user/dashboard" element={<Dashboard />}></Route>
         <Route path="/api/admin/dashboard" element={<Dashboard />}></Route>
+        <Route path="/profile" element={<Profile />}></Route>
+        <Route path="/groups" element={<Group />}></Route>
+        <Route path="/notifications" element={<Notification />}></Route>
       </Routes>
     </Router>
   );
