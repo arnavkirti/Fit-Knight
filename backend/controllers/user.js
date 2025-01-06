@@ -280,3 +280,38 @@ exports.userProfile = async (req, res) => {
       .json({ error: "Error fetching user profile", details: err.message });
   }
 };
+
+exports.updateUserProfile = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { updatedProfile } = req.body;
+
+    if (!updatedProfile) {
+      return res.status(400).json({ error: "Missing updatedProfile" });
+    }
+
+    const allowedFields = ["name", "email", "phone"];
+    const updates = Object.keys(updatedProfile);
+    const isValidUpdate = updates.every((field) =>
+      allowedFields.includes(field)
+    );
+
+    if (!isValidUpdate) {
+      return res.status(400).json({ error: "Invalid update fields" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    updates.forEach((field) => (user[field] = updatedProfile[field]));
+    await user.save();
+
+    res.json({ message: "User profile updated successfully", user });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ error: "Error updating user profile", details: err.message });
+  }
+};

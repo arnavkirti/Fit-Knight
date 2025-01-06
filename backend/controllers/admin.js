@@ -290,3 +290,38 @@ exports.adminProfile = async (req, res) => {
       .json({ error: "Error fetching admin profile", details: err.message });
   }
 };
+
+exports.updateAdminProfile = async (req, res) => {
+  try {
+    const adminId = req.adminId;
+    const { updatedProfile } = req.body;
+
+    if (!updatedProfile) {
+      return res.status(400).json({ error: "Missing updatedProfile" });
+    }
+
+    const allowedFields = ["name", "email", "phone"];
+    const updates = Object.keys(updatedProfile);
+    const isValidUpdate = updates.every((field) =>
+      allowedFields.includes(field)
+    );
+
+    if (!isValidUpdate) {
+      return res.status(400).json({ error: "Invalid update fields" });
+    }
+
+    const admin = await User.findById(adminId);
+    if (!admin) {
+      return res.status(404).json({ error: "Admin not found" });
+    }
+
+    Object.assign(admin, updatedProfile);
+    await admin.save();
+
+    res.json({ message: "Admin profile updated successfully", admin });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "Error updating admin profile", details: error.message });
+  }
+};

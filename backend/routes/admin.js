@@ -10,6 +10,7 @@ const {
   adminProfile,
   getGroup,
   updateJoinRequest,
+  updateAdminProfile,
 } = require("../controllers/admin");
 const { verifyAdminToken } = require("../middleware/authMiddleware");
 const router = express.Router();
@@ -35,5 +36,6 @@ router.put("/update-group", verifyAdminToken, updateGroupDetails);
 
 //profile routes
 router.get("/profile", verifyAdminToken, adminProfile);
+router.post("/profile/update", verifyAdminToken, updateAdminProfile);
 
 module.exports = router;
