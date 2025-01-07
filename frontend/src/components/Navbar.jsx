@@ -1,12 +1,16 @@
-// add logic to fetch user profile picture (admin, user)
-
-import axios from "axios";
+import axiosInstance from "@/axiosConfig";
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const role = localStorage.getItem("role");
+  const Role = localStorage.getItem("role");
+  let role = "";
+  if (Role === "BuddyFinder") {
+    role = "user";
+  } else {
+    role = "admin";
+  }
   const [userProfile, setUserProfile] = React.useState(null);
   const logout = () => {
     localStorage.removeItem("role");
@@ -14,6 +18,12 @@ const Navbar = () => {
     navigate("/");
   };
 
+  const getProfilePic = async () => {
+    const res = await axiosInstance.get(`/api/${role}/profile`);
+    setUserProfile(res.data.profilePicture);
+    console.log(res.data);
+  };
+  getProfilePic();
   return (
     <nav className="bg-gray-800 text-white p-4">
       <div className="container mx-auto flex justify-between items-center">
@@ -22,7 +32,10 @@ const Navbar = () => {
           <Link to={`/api/${role}/dashboard`} className="hover:text-gray-300">
             Dashboard
           </Link>
-          <Link to={`/api/${role}/notifications`} className="hover:text-gray-300">
+          <Link
+            to={`/api/${role}/notifications`}
+            className="hover:text-gray-300"
+          >
             Notifications
           </Link>
         </div>
@@ -34,7 +47,7 @@ const Navbar = () => {
             onClick={() => navigate("/profile")}
           >
             <img
-              src={userProfile ? userProfile : "react.svg"}
+              src={userProfile ? userProfile : "/default-avatar.png"}
               alt="Profile"
               className="w-full h-full object-cover"
             />
@@ -52,4 +65,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-

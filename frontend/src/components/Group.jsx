@@ -52,6 +52,12 @@ const Group = ({ groupId }) => {
             <span className="font-semibold">Members:</span>{" "}
             {groupData.members.length}
           </p>
+          <button
+            className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg"
+            onClick={() => navigate(`/group-chat/${groupId}`)}
+          >
+            Go to Group Chat
+          </button>
           <h2 className="text-xl font-semibold mt-6 mb-2">Join Requests</h2>
           {groupData.joinRequests.length > 0 ? (
             <ul className="list-disc list-inside text-gray-700">

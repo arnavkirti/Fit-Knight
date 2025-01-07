@@ -14,7 +14,7 @@ const groupZodSchema = z.object({
       coordinates: z.array(z.number()).length(2),
     })
     .optional(),
-  description: z.string().optional(),
+  description: z.string().optional().default(""),
   organizer: z
     .string()
     .refine((val) => mongoose.Types.ObjectId.isValid(val))
@@ -25,7 +25,8 @@ const groupZodSchema = z.object({
         message: "Member ID must be a valid ObjectId",
       })
     )
-    .optional(),
+    .optional()
+    .default([]),
   joinRequests: z
     .array(
       z.object({
@@ -36,7 +37,8 @@ const groupZodSchema = z.object({
         status: z.enum(["pending", "accepted", "rejected"]).default("pending"),
       })
     )
-    .optional(),
+    .optional()
+    .default([]),
 });
 
 // groupSchema
