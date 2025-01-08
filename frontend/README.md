@@ -4,12 +4,14 @@
     - admin testing (PENDING)
     - user testing (PENDING)
 - Profile 
-    - add backend route to edit data in DB (Done) now update the Frontend accordingly
+    - now update the Frontend  to update profile 
     - add logic to update the profile picture also! (PENDING) 
-      - add GROUP CHAT LOGIC (PENDING) !!!!!!!!
 - Group Page
     - TEST LOGIC
+    - add GROUP CHAT LOGIC (PENDING) !!!!!!!!
 - Notification Feed
+    - add APIs (logic)
+    - Build Frontend 
 
 
 

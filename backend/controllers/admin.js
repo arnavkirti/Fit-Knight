@@ -91,8 +91,8 @@ exports.addGroup = async (req, res) => {
       location,
       organizer: adminId,
     });
- 
-    await newGroup.save(); 
+
+    await newGroup.save();
     await admin.updateOne({ group: newGroup._id });
 
     res

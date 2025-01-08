@@ -1,5 +1,6 @@
-// make endpoint to update profile
+// handle frontend to update profile
 // also let user update profile picture
+
 import React, { useState, useEffect } from "react";
 import axiosInstance from "@/axiosConfig";
 import Navbar from "@/components/Navbar";
@@ -41,16 +42,19 @@ const Profile = () => {
           ? "/api/user/profile/update"
           : "/api/admin/profile/update";
 
-      const updatedProfile = {
-        name: formData.username,
-        email: formData.email,
-        phone: formData.phone,
-        about: formData.about,
-        fitnessDetails: {
-          achievements: formData.achievements,
+      const reqbody = {
+        updatedProfile: {
+          name: formData.username,
+          email: formData.email,
+          phone: formData.phone,
+          about: formData.about,
+          fitnessDetails: {
+            fitnessGoals: formData.fitnessGoals,
+            achievements: [formData.achievements],
+          },
         },
       };
-      await axios.post(route, updatedProfile );
+      await axiosInstance.post(route, reqbody);
       setEditMode(false);
       fetchProfile();
     } catch (err) {

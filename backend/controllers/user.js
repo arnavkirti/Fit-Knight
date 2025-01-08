@@ -290,7 +290,14 @@ exports.updateUserProfile = async (req, res) => {
       return res.status(400).json({ error: "Missing updatedProfile" });
     }
 
-    const allowedFields = ["name", "email", "phone", "about", "profilePicture", "fitnessDetails"];
+    const allowedFields = [
+      "username",
+      "email",
+      "phone",
+      "profilePicture",
+      "about",
+      "fitnessDetails",
+    ];
     const updates = Object.keys(updatedProfile);
     const isValidUpdate = updates.every((field) =>
       allowedFields.includes(field)
@@ -305,7 +312,7 @@ exports.updateUserProfile = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    updates.forEach((field) => (user[field] = updatedProfile[field]));
+    Object.assign(user, updatedProfile);
     await user.save();
 
     res.json({ message: "User profile updated successfully", user });
