@@ -166,7 +166,7 @@ exports.deleteGroup = async (req, res) => {
 
     await Group.findByIdAndDelete(groupId);
 
-    await User.findByIdAndUpdate(adminId, { $pull: { groups: groupId } });
+    await User.findByIdAndUpdate(adminId, { $set: { group: null } });
 
     res.json({ message: "Group deleted successfully" });
   } catch (err) {
@@ -218,7 +218,7 @@ exports.updateJoinRequest = async (req, res) => {
 // group routes
 exports.getGroupDetails = async (req, res) => {
   try {
-    const { groupId } = req.query;
+    const { groupId } = req.body;
     if (!groupId) {
       return res.status(400).json({ error: "Group ID is required" });
     }

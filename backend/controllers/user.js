@@ -103,7 +103,7 @@ exports.getRecommendedBuddies = async (req, res) => {
 exports.getAvailableGroups = async (req, res) => {
   try {
     const userId = req.userId;
-    const { maxDistance } = req.query;
+    const { maxDistance } = req.body;
 
     // validate maxDistance
     const maxDist = parseInt(maxDistance, 10);
@@ -297,6 +297,7 @@ exports.updateUserProfile = async (req, res) => {
       "profilePicture",
       "about",
       "fitnessDetails",
+      "location"
     ];
     const updates = Object.keys(updatedProfile);
     const isValidUpdate = updates.every((field) =>

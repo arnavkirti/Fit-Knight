@@ -28,11 +28,11 @@ router.post(
   verifyAdminToken,
   updateJoinRequest
 );
-router.delete("/dashboard/delete-group", verifyAdminToken, deleteGroup);
+router.delete("/dashboard/delete-group", verifyAdminToken, deleteGroup); //tested
 
 // group routes
-router.get("/group-details", getGroupDetails);  
-router.put("/update-group", verifyAdminToken, updateGroupDetails); 
+router.get("/group-details", getGroupDetails);
+router.put("/update-group", verifyAdminToken, updateGroupDetails);
 
 //profile routes
 router.get("/profile", verifyAdminToken, adminProfile); // tested
