@@ -125,7 +125,7 @@ exports.getGroup = async (req, res) => {
 
 exports.getJoinRequests = async (req, res) => {
   try {
-    const { groupId } = req.body;
+    const { groupId } = req.query; // query params
     if (!groupId) {
       return res.status(400).json({ error: "Group ID is required" });
     }

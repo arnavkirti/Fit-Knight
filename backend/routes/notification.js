@@ -1,6 +1,10 @@
-import express from "express";
-const { createNotification, fetchNotifications } = require("../controllers/notification");
-const { verifyUserToken } = require("../middlewares/userValidation");
+const express = require("express");
+const {
+  createNotification,
+  fetchNotifications,
+  markRead,
+} = require("../controllers/notification");
+const { verifyUserToken } = require("../middleware/authMiddleware");
 const router = express.Router();
 
 router.post("/", createNotification);

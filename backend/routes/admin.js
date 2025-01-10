@@ -22,7 +22,7 @@ router.post("/login", adminLogin); //tested
 //dashboard routes
 router.post("/dashboard/add-group", verifyAdminToken, addGroup); // tested
 router.get("/dashboard/group", verifyAdminToken, getGroup); //tested
-router.get("/dashboard/join-requests", getJoinRequests); //tested
+router.get("/dashboard/join-requests/:groupId", getJoinRequests); //tested
 router.post(
   "/dashboard/update-join-request",
   verifyAdminToken,

@@ -24,16 +24,26 @@ const CreateGroupPopup = ({ isOpen, closePopup, fetchGroups }) => {
           name: groupName,
           activityType: activityType,
           schedule: schedule,
-          location: { coordinates: location.split(",").map(Number) },
+          location: {
+            type: "Point",
+            coordinates: location.split(",").map(Number),
+          },
           description: groupDescription,
         },
         {
           validateStatus: (status) => status < 500,
         }
       );
+      const updateUser = await axiosInstance.post("/api/admin/profile/update", {
+        updatedProfile: {
+          group: response.data._id,
+        },
+      });
+      console.log("Response:", response);
+      console.log("Update User:", updateUser);
 
       if (response.status === 200) {
-        fetchAdminData();
+        fetchGroups();
         closePopup();
       }
     } catch (err) {
@@ -41,9 +51,7 @@ const CreateGroupPopup = ({ isOpen, closePopup, fetchGroups }) => {
         err.response?.data?.error ||
         "An error occurred while creating the group.";
       setError(
-        Array.isArray(errorMessage)
-          ? errorMessage.join(", ")
-          : errorMessage
+        Array.isArray(errorMessage) ? errorMessage.join(", ") : errorMessage
       );
       console.error("Error creating group:", err);
     }

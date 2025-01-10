@@ -21,7 +21,6 @@ const Navbar = () => {
   const getProfilePic = async () => {
     const res = await axiosInstance.get(`/api/${role}/profile`);
     setUserProfile(res.data.profilePicture);
-    console.log(res.data);
   };
   getProfilePic();
   return (
@@ -33,7 +32,7 @@ const Navbar = () => {
             Dashboard
           </Link>
           <Link
-            to={`/api/${role}/notifications`}
+            to={`/notifications`}
             className="hover:text-gray-300"
           >
             Notifications
