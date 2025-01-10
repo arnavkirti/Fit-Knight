@@ -21,6 +21,7 @@ app.use(express.json());
 app.use("/api/user", require("./routes/user"));
 app.use("/api/admin", require("./routes/admin"));
 app.use("/api/group", require("./routes/group"));
+app.use("/api/notification", require("./routes/notification"));
 
 
 //socket.io for group chat
