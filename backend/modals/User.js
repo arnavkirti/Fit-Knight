@@ -59,8 +59,9 @@ const userSchema = new mongoose.Schema(
       fitnessGoals: String,
       workoutPreferences: [String],
       availability: String,
-      achievements: [String],
+      achievements: String,
     },
+    revealContactInfo: { type: Boolean, default: false },
     about: { type: String, default: "" },
     group: {
       type: mongoose.Schema.Types.ObjectId,

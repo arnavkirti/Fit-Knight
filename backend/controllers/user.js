@@ -272,10 +272,10 @@ exports.userProfile = async (req, res) => {
 
       //Fitness history
       achivements: user.fitnessDetails.achievements,
-
       //contact info // optional visibility based on privacy settings
       email: user.email,
       phone: user.phone,
+      revealContactInfo: user.revealContactInfo,
     });
   } catch (err) {
     res
@@ -301,6 +301,7 @@ exports.updateUserProfile = async (req, res) => {
       "about",
       "fitnessDetails",
       "location",
+      "revealContactInfo",
     ];
     const updates = Object.keys(updatedProfile);
     const isValidUpdate = updates.every((field) =>

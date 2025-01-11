@@ -18,13 +18,6 @@
 
 
 # Features left- 
-1. AUTH- 
-   let user upload profile pic
-2. Dashboard-
-    admin- 
-        add group details
-    user-
-        update logic to show all groups (just distance is enough)
 3. Profile-
     fix frontend logic to update profile
 4. Group-

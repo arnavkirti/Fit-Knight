@@ -30,7 +30,7 @@ const Dashboard = () => {
         await Promise.all([
           axiosInstance.get("/api/user/dashboard/recommended-buddies"),
           axiosInstance.get("/api/user/dashboard/available-groups", {
-            params: { maxDistance: 10000 },
+            maxDistance: 10000,
           }),
           axiosInstance.get("/api/user/dashboard/user-group"),
         ]);

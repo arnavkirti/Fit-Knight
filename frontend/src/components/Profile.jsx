@@ -13,11 +13,11 @@ const Profile = () => {
 
   const fetchProfile = async () => {
     try {
-      const route =
-        role === "BuddyFinder" ? "/api/user/profile" : "/api/admin/profile";
+      const route = `/api/${role === "BuddyFinder" ? "user" : "admin"}/profile`;
       const response = await axiosInstance.get(route);
       setProfileData(response.data);
       setFormData(response.data); // to initialize the form data
+      console.log(response.data);
     } catch (err) {
       console.error(err);
     }
@@ -37,24 +37,26 @@ const Profile = () => {
 
   const handleUpdate = async () => {
     try {
-      const route =
-        role === "BuddyFinder"
-          ? "/api/user/profile/update"
-          : "/api/admin/profile/update";
+      const route = `/api/${
+        role === "BuddyFinder" ? "user" : "admin"
+      }/profile/update`;
 
       const reqbody = {
         updatedProfile: {
-          name: formData.username,
+          username: formData.username,
           email: formData.email,
           phone: formData.phone,
           about: formData.about,
           fitnessDetails: {
             fitnessGoals: formData.fitnessGoals,
-            achievements: [formData.achievements],
+            achievements: formData.achivements,
           },
+          revealContactInfo: formData.revealContactInfo,
         },
       };
-      await axiosInstance.post(route, reqbody);
+      const response = await axiosInstance.post(route, reqbody);
+      console.log(response.data);
+      setProfileData(response.data); // update the profile data
       setEditMode(false);
       fetchProfile();
     } catch (err) {
@@ -122,7 +124,7 @@ const Profile = () => {
                         </label>
                         <textarea
                           name="achievements"
-                          value={formData.achievements}
+                          value={formData.achivements}
                           onChange={handleInputChange}
                           className="border border-gray-300 rounded-md p-2 mt-1"
                         />
@@ -174,7 +176,7 @@ const Profile = () => {
                         Fitness Goals: {profileData.fitnessGoals}
                       </p>
                       <p className="text-gray-700">
-                        Achievements: {profileData.achievements}
+                        Achievements: {profileData.achivements}
                       </p>
                     </>
                   )}
