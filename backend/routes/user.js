@@ -11,10 +11,11 @@ const {
   leaveGroup,
 } = require("../controllers/user");
 const { verifyUserToken } = require("../middleware/authMiddleware");
+const upload = require("../middleware/cloudConfig");
 const router = express.Router();
 
 // auth routes
-router.post("/signup", userSignup); //tested
+router.post("/signup",upload.single("profilePicture") , userSignup); //tested
 router.post("/login", userLogin); //tested
 
 // dashboard routes

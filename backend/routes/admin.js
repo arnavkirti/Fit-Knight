@@ -13,10 +13,11 @@ const {
   updateAdminProfile,
 } = require("../controllers/admin");
 const { verifyAdminToken } = require("../middleware/authMiddleware");
+const upload = require("../middleware/cloudConfig");
 const router = express.Router();
 
 // auth routes
-router.post("/signup", adminSignup); //tested
+router.post("/signup", upload.single("profilePicture"), adminSignup); //tested
 router.post("/login", adminLogin); //tested
 
 //dashboard routes

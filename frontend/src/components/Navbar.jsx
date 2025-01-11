@@ -28,7 +28,7 @@ const Navbar = () => {
       <div className="container mx-auto flex justify-between items-center">
         {/* Links */}
         <div className="flex items-center space-x-6">
-          <Link to={`/api/${role}/dashboard`} className="hover:text-gray-300">
+          <Link to={`/dashboard`} className="hover:text-gray-300">
             Dashboard
           </Link>
           <Link

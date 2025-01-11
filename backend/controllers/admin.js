@@ -2,11 +2,25 @@ const User = require("../modals/User");
 const Group = require("../modals/Group");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const pinata = require("../middleware/cloudConfig");
+
 require("dotenv").config();
 
 // auth routes
 exports.adminSignup = async (req, res) => {
   try {
+    const { username, password, email, phone, role } = req.body;
+    const file = req.file;
+
+    const metadata = { name: file.orignalname };
+    const readableStream = file.buffer;
+
+    const pinataResult = await pinata.pinFileToIPFS(readableStream, {
+      pinataMetadata: metadata,
+    });
+
+    const ipfsUrl = `https://sapphire-active-finch-862.mypinata.cloud/ipfs/${pinataResult.IpfsHash}`;
+
     // validate with zod
     const validationResult = User.validateUser(req.body);
     if (!validationResult.success) {
@@ -16,14 +30,13 @@ exports.adminSignup = async (req, res) => {
       });
     }
 
-    const { username, password, email, phone, role } = req.body;
-
     const newAdmin = new User({
       email,
       phone,
       username,
       password,
       role,
+      profilePicture: ipfsUrl,
     });
 
     await newAdmin.save();

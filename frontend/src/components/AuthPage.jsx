@@ -10,25 +10,12 @@ import { useNavigate } from "react-router-dom";
 const AuthPage = () => {
   const { role } = useParams();
   const [isLogin, setIsLogin] = useState(true);
-  // const [location, setLocation] = useState(null);
+  const [location, setLocation] = useState(null);
+  const [profilePicture, setProfilePicture] = useState(null);
   const navigate = useNavigate();
 
-  const getUserLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const latitude = position.coords.latitude;
-          const longitude = position.coords.longitude;
-          setLocation([longitude, latitude]);
-        },
-        (error) => {
-          console.error("Error fetching location:", error.message);
-          alert("Unable to fetch location. Please enable location access.");
-        }
-      );
-    } else {
-      alert("Geolocation is not supported by your browser.");
-    }
+  const handleFileChange = (e) => {
+    setProfilePicture(e.target.files[0]);
   };
 
   const handleFormSubmit = async (e) => {
@@ -43,6 +30,10 @@ const AuthPage = () => {
       );
     }
 
+    if (profilePicture) {
+      formData.append("profilePicture", profilePicture);
+    }
+
     try {
       const response = await axiosInstance.post(
         url,
@@ -51,12 +42,7 @@ const AuthPage = () => {
       console.log(response.data);
       localStorage.setItem("role", response.data.role);
       localStorage.setItem("token", response.data.token);
-      navigate(
-        response.data.role === "BuddyFinder"
-          ? "/api/user/dashboard"
-          : "/api/admin/dashboard"
-      );
-      console.log(response.data);
+      navigate("/dashboard");
     } catch (error) {
       console.error(
         "Error:",
@@ -99,6 +85,10 @@ const AuthPage = () => {
 
           {!isLogin && (
             <>
+              <div className="mb-4">
+                <label className="block text-gray-700">Profile Picture</label>
+                <Input type="file" onChange={handleFileChange} />
+              </div>
               <div>
                 <Input
                   name="email"
@@ -118,12 +108,36 @@ const AuthPage = () => {
                 />
               </div>
               <Button
-                type="button"
-                onClick={getUserLocation}
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                      (position) => {
+                        const { latitude, longitude } = position.coords;
+                        setLocation(`${longitude}, ${latitude}`);
+                      },
+                      (error) => {
+                        console.error(
+                          "Error fetching location:",
+                          error.message
+                        );
+                        alert(
+                          "Unable to fetch location. Please allow location access."
+                        );
+                      }
+                    );
+                  } else {
+                    alert("Geolocation is not supported by your browser.");
+                  }
+                }}
                 className="w-full bg-gray-100 text-blue-600 py-2 px-4 rounded-md hover:bg-gray-200 transition"
               >
                 Use My Location
               </Button>
+              <p className="mt-2 text-sm text-gray-600">
+                Selected Location:{" "}
+                <span className="font-medium">{location}</span>
+              </p>
             </>
           )}
           <Button

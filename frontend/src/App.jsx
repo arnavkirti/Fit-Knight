@@ -13,8 +13,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/api/:role" element={<AuthPage />} />
-        <Route path="/api/user/dashboard" element={<Dashboard />}></Route>
-        <Route path="/api/admin/dashboard" element={<Dashboard />}></Route>
+        <Route path="/dashboard" element={<Dashboard />}></Route>
         <Route path="/profile" element={<Profile />}></Route>
         <Route path="/groups" element={<Group />}></Route>
         <Route path="/notifications" element={<Notification />}></Route>

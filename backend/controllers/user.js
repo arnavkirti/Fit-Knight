@@ -1,4 +1,5 @@
 const User = require("../modals/User");
+const Group = require("../modals/Group");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
@@ -6,6 +7,9 @@ require("dotenv").config();
 // auth routes
 exports.userSignup = async (req, res) => {
   try {
+    const { email, username, password, phone, role } = req.body;
+    const profilePicture = req.file.path;
+
     // validate with zod
     const validationResult = User.validateUser(req.body);
     if (!validationResult.success) {
@@ -15,14 +19,13 @@ exports.userSignup = async (req, res) => {
       });
     }
 
-    const { email, username, password, phone, role } = req.body;
-
     const newUser = new User({
       email,
       username,
       password,
       phone,
       role,
+      profilePicture,
     });
 
     await newUser.save();
@@ -45,7 +48,7 @@ exports.userLogin = async (req, res) => {
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
       {
-        expiresIn: "1h",
+        expiresIn: "3h",
       }
     );
     res.status(200).json({ message: "Login successful", token, role });
@@ -297,7 +300,7 @@ exports.updateUserProfile = async (req, res) => {
       "profilePicture",
       "about",
       "fitnessDetails",
-      "location"
+      "location",
     ];
     const updates = Object.keys(updatedProfile);
     const isValidUpdate = updates.every((field) =>
