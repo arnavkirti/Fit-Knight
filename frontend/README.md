@@ -20,14 +20,15 @@
 # Features left- 
 1. AUTH- 
    let user upload profile pic
-2. Dashboard
-   admin- 
-        fix frontend logic of creating group etc.
-3. Profile
+2. Dashboard-
+    admin- 
+        add group details
+    user-
+        update logic to show all groups (just distance is enough)
+3. Profile-
     fix frontend logic to update profile
-4. Group 
+4. Group-
     GroupChat logic
     Group details frontend
-5. Notification
-    make APIs
-    make frontend logic
+5. Notification-
+    add logic to fetch notifications on specific events

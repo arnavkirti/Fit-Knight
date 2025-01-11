@@ -114,8 +114,15 @@ exports.getGroup = async (req, res) => {
     if (!admin || admin.role !== "Organizer") {
       return res.status(404).json({ error: "Admin not found or invalid role" });
     }
-
-    res.json({ groups: admin.group });
+    const group = await Group.findOne({ organizer: adminId });
+    if (!group) {
+      return res.status(404).json({ error: "Group not found" });
+    }
+    res.json({
+      groups: admin.group,
+      name: group.name,
+      description: group.description,
+    });
   } catch (err) {
     res
       .status(500)

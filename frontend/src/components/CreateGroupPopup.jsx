@@ -95,15 +95,43 @@ const CreateGroupPopup = ({ isOpen, closePopup, fetchGroups }) => {
               </div>
 
               <div className="mb-4">
-                <label className="block text-gray-700">
+                <label className="block text-gray-700 mb-2">
                   Location (Longitude, Latitude)
                 </label>
-                <input
-                  type="text"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-md"
-                />
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (navigator.geolocation) {
+                      navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                          const { latitude, longitude } = position.coords;
+                          setLocation(`${longitude}, ${latitude}`);
+                          alert(`Location fetched: ${longitude}, ${latitude}`);
+                        },
+                        (error) => {
+                          console.error(
+                            "Error fetching location:",
+                            error.message
+                          );
+                          alert(
+                            "Unable to fetch location. Please allow location access."
+                          );
+                        }
+                      );
+                    } else {
+                      alert("Geolocation is not supported by your browser.");
+                    }
+                  }}
+                  className="w-full p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300"
+                >
+                  Get Location
+                </button>
+                {location && (
+                  <p className="mt-2 text-sm text-gray-600">
+                    Selected Location:{" "}
+                    <span className="font-medium">{location}</span>
+                  </p>
+                )}
               </div>
               <div className="mb-4">
                 <label className="block text-gray-700">Schedule</label>

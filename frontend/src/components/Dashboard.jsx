@@ -52,13 +52,12 @@ const Dashboard = () => {
       const groupResponse = await axiosInstance.get(
         "/api/admin/dashboard/group"
       );
-      setAdminGroup(groupResponse.data.groups);
+      setAdminGroup(groupResponse.data);
       const groupid = groupResponse.data.groups;
       const requestsResponse = await axiosInstance.get(
         `/api/admin/dashboard/join-requests?groupId=${groupid}`
       );
       setJoinRequests(requestsResponse.data);
-      console.log(groupResponse, requestsResponse);
     } catch (error) {
       console.error(
         "Error:",
@@ -113,7 +112,7 @@ const Dashboard = () => {
   const deleteGroup = async () => {
     try {
       await axiosInstance.delete("/api/admin/dashboard/delete-group", {
-        data: { groupId: adminGroup._id },
+        data: { groupId: adminGroup },
       });
       alert("Group deleted successfully");
       setAdminGroup(null);
@@ -127,8 +126,8 @@ const Dashboard = () => {
     }
   };
 
-  const handleGroupClick = (groupId) => {
-    navigate(`/group/${groupId}`); // Redirect to group page
+  const handleGroupClick = (adminGroup) => {
+    navigate(`/group/${adminGroup}`); // Redirect to group page
   };
 
   // Accept or reject join requests (admin)
@@ -253,7 +252,7 @@ const Dashboard = () => {
                     className="p-4 border rounded-lg bg-gray-100 hover:bg-gray-200 cursor-pointer"
                     onClick={handleGroupClick}
                   >
-                    <p className="text-xl">{adminGroup}</p>
+                    <p className="text-xl">{adminGroup.name}</p>
                     <p className="text-gray-600">{adminGroup.description}</p>
                     <button
                       onClick={deleteGroup}
