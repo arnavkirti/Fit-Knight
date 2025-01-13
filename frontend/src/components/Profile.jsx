@@ -69,125 +69,143 @@ const Profile = () => {
       <div>
         <Navbar />
       </div>
-      <div className="bg-gray-100 min-h-screen p-6 overflow-y-auto">
-        <h1 className="text-2xl font-bold text-center my-6">
+      <div className="bg-gradient-to-b from-blue-900 via-gray-900 to-black min-h-screen p-8">
+        <h1 className="text-4xl font-extrabold text-center text-white mb-8">
           {role === "Organizer" ? "Admin Profile" : "User Profile"}
         </h1>
+
         {profileData && (
-          <div className="bg-white shadow-md rounded-lg p-6 max-w-2xl mx-auto">
-            <img
-              src={profileData.profilePicture || "/default-avatar.png"}
-              alt="Profile"
-              className="w-24 h-24 rounded-full mx-auto mb-4"
-            />
-            <div className="space-y-4">
+          <div className="bg-gray-800 shadow-xl rounded-xl p-8 max-w-4xl mx-auto">
+            <div className="flex flex-col items-center">
+              <img
+                src={profileData.profilePicture || "/default-avatar.png"}
+                alt="Profile"
+                className="w-28 h-28 rounded-full border-4 border-blue-500 shadow-lg mb-6"
+              />
+              <h2 className="text-2xl font-semibold text-white">
+                {profileData.username || "No Username"}
+              </h2>
+              <p className="text-gray-400">
+                {profileData.about || "No bio added yet."}
+              </p>
+            </div>
+
+            <div className="mt-10 space-y-6">
               {editMode ? (
                 <>
                   <div className="flex flex-col">
-                    <label className="text-gray-700 font-medium">
-                      Username:
+                    <label className="text-gray-400 font-medium mb-2">
+                      Username
                     </label>
                     <input
                       type="text"
                       name="username"
                       value={formData.username}
                       onChange={handleInputChange}
-                      className="border border-gray-300 rounded-md p-2 mt-1"
+                      className="w-full bg-gray-700 border border-gray-600 rounded-lg p-3 text-white focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                   <div className="flex flex-col">
-                    <label className="text-gray-700 font-medium">About:</label>
+                    <label className="text-gray-400 font-medium mb-2">
+                      About
+                    </label>
                     <textarea
                       name="about"
                       value={formData.about}
                       onChange={handleInputChange}
-                      className="border border-gray-300 rounded-md p-2 mt-1"
+                      className="w-full bg-gray-700 border border-gray-600 rounded-lg p-3 text-white focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                   {role === "BuddyFinder" && (
                     <>
                       <div className="flex flex-col">
-                        <label className="text-gray-700 font-medium">
-                          Fitness Goals:
+                        <label className="text-gray-400 font-medium mb-2">
+                          Fitness Goals
                         </label>
                         <input
                           type="text"
                           name="fitnessGoals"
                           value={formData.fitnessGoals}
                           onChange={handleInputChange}
-                          className="border border-gray-300 rounded-md p-2 mt-1"
+                          className="w-full bg-gray-700 border border-gray-600 rounded-lg p-3 text-white focus:ring-2 focus:ring-blue-500"
                         />
                       </div>
                       <div className="flex flex-col">
-                        <label className="text-gray-700 font-medium">
-                          Achievements:
+                        <label className="text-gray-400 font-medium mb-2">
+                          Achievements
                         </label>
                         <textarea
                           name="achievements"
-                          value={formData.achivements}
+                          value={formData.achievements}
                           onChange={handleInputChange}
-                          className="border border-gray-300 rounded-md p-2 mt-1"
+                          className="w-full bg-gray-700 border border-gray-600 rounded-lg p-3 text-white focus:ring-2 focus:ring-blue-500"
                         />
                       </div>
                     </>
                   )}
                   <div className="flex flex-col">
-                    <label className="text-gray-700 font-medium">Email:</label>
+                    <label className="text-gray-400 font-medium mb-2">
+                      Email
+                    </label>
                     <input
                       type="email"
                       name="email"
                       value={formData.email}
                       onChange={handleInputChange}
-                      className="border border-gray-300 rounded-md p-2 mt-1"
+                      className="w-full bg-gray-700 border border-gray-600 rounded-lg p-3 text-white focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                   <div className="flex flex-col">
-                    <label className="text-gray-700 font-medium">Phone:</label>
+                    <label className="text-gray-400 font-medium mb-2">
+                      Phone
+                    </label>
                     <input
                       type="text"
                       name="phone"
                       value={formData.phone}
                       onChange={handleInputChange}
-                      className="border border-gray-300 rounded-md p-2 mt-1"
+                      className="w-full bg-gray-700 border border-gray-600 rounded-lg p-3 text-white focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
-                  <div className="flex items-center">
-                    <label className="text-gray-700 font-medium">
-                      Reveal Contact Info:
-                    </label>
+                  <div className="flex items-center mt-4">
                     <input
                       type="checkbox"
                       name="revealContactInfo"
                       checked={formData.revealContactInfo || false}
                       onChange={handleInputChange}
-                      className="w-4 h-4 mr-2"
+                      className="w-5 h-5 text-blue-500 rounded focus:ring-2 focus:ring-blue-500"
                     />
+                    <label className="ml-3 text-gray-400 font-medium">
+                      Reveal Contact Info
+                    </label>
                   </div>
                 </>
               ) : (
                 <>
-                  <p className="text-gray-700">
-                    Username: {profileData.username}
+                  <p className="text-gray-400">
+                    <strong>About:</strong>{" "}
+                    {profileData.about || "No bio added yet."}
                   </p>
-                  <p className="text-gray-700">About: {profileData.about}</p>
                   {role === "BuddyFinder" && (
                     <>
-                      <p className="text-gray-700">
-                        Fitness Goals: {profileData.fitnessGoals}
+                      <p className="text-gray-400">
+                        <strong>Fitness Goals:</strong>{" "}
+                        {profileData.fitnessGoals || "No goals specified."}
                       </p>
-                      <p className="text-gray-700">
-                        Achievements: {profileData.achivements}
+                      <p className="text-gray-400">
+                        <strong>Achievements:</strong>{" "}
+                        {profileData.achievements || "No achievements listed."}
                       </p>
                     </>
                   )}
-                  <p className="text-gray-700">
-                    Email:{" "}
+                  <p className="text-gray-400">
+                    <strong>Email:</strong>{" "}
                     {profileData.revealContactInfo
                       ? profileData.email
                       : "Hidden"}
                   </p>
-                  <p className="text-gray-700">
-                    Phone:{" "}
+                  <p className="text-gray-400">
+                    <strong>Phone:</strong>{" "}
                     {profileData.revealContactInfo
                       ? profileData.phone
                       : "Hidden"}
@@ -195,18 +213,19 @@ const Profile = () => {
                 </>
               )}
             </div>
-            <div className="mt-6 flex justify-end space-x-4">
+
+            <div className="mt-10 flex justify-center space-x-4">
               {editMode ? (
                 <>
                   <button
                     onClick={handleUpdate}
-                    className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                    className="px-8 py-2 bg-blue-500 text-white font-bold rounded-lg shadow hover:bg-blue-600 transition"
                   >
                     Save
                   </button>
                   <button
                     onClick={() => setEditMode(false)}
-                    className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600"
+                    className="px-8 py-2 bg-gray-600 text-white font-bold rounded-lg shadow hover:bg-gray-700 transition"
                   >
                     Cancel
                   </button>
@@ -214,7 +233,7 @@ const Profile = () => {
               ) : (
                 <button
                   onClick={() => setEditMode(true)}
-                  className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
+                  className="px-8 py-2 bg-indigo-500 text-white font-bold rounded-lg shadow hover:bg-indigo-600 transition"
                 >
                   Edit Profile
                 </button>

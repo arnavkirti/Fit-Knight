@@ -113,7 +113,7 @@ exports.getAvailableGroups = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    const location = user.location?.coordinates;
+    const {coordinates} = user.location;
     if (!location || location.length !== 2) {
       return res
         .status(400)
@@ -125,17 +125,14 @@ exports.getAvailableGroups = async (req, res) => {
         $near: {
           $geometry: {
             type: "Point",
-            coordinates: location,
+            coordinates: coordinates,
           },
           $maxDistance: 10000, 
         },
       },
     };
 
-    const groups = await Group.find(query).populate(
-      "organizer",
-      "username profilePicture"
-    );
+    const groups = await Group.find(query);
 
     if (groups.length === 0) {
       return res.status(200).json({ message: "No groups found", groups: [] });

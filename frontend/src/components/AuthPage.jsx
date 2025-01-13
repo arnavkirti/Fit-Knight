@@ -52,20 +52,23 @@ const AuthPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black text-gray-100">
+      <div className="w-full max-w-md bg-gray-800 p-8 rounded-lg shadow-2xl">
+        <h1 className="text-3xl font-extrabold text-center text-white mb-6">
           {isLogin ? "Login" : "Signup"} as{" "}
-          {role == "user" ? "Buddy Finder" : "Group Organiser"}
+          <span className="text-blue-500">
+            {role === "user" ? "Buddy Finder" : "Group Organiser"}
+          </span>
         </h1>
-        <form onSubmit={handleFormSubmit} className="space-y-4">
+
+        <form onSubmit={handleFormSubmit} className="space-y-6">
           <div>
             <Input
               name="username"
               type="text"
               placeholder="Username"
               required
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 border border-gray-700 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
@@ -74,7 +77,7 @@ const AuthPage = () => {
               type="password"
               placeholder="Password"
               required
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 border border-gray-700 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <Input
               name="role"
@@ -85,9 +88,15 @@ const AuthPage = () => {
 
           {!isLogin && (
             <>
-              <div className="mb-4">
-                <label className="block text-gray-700">Profile Picture</label>
-                <Input type="file" onChange={handleFileChange} />
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Profile Picture
+                </label>
+                <Input
+                  type="file"
+                  onChange={handleFileChange}
+                  className="w-full px-3 py-2 border border-gray-700 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
               </div>
               <div>
                 <Input
@@ -95,7 +104,7 @@ const AuthPage = () => {
                   type="email"
                   placeholder="Email"
                   required
-                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 border border-gray-700 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div>
@@ -104,7 +113,7 @@ const AuthPage = () => {
                   type="tel"
                   placeholder="Phone Number"
                   required
-                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 border border-gray-700 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <Button
@@ -130,27 +139,29 @@ const AuthPage = () => {
                     alert("Geolocation is not supported by your browser.");
                   }
                 }}
-                className="w-full bg-gray-100 text-blue-600 py-2 px-4 rounded-md hover:bg-gray-200 transition"
+                className="w-full bg-gray-700 text-blue-400 py-3 rounded-lg hover:bg-gray-600 transition"
               >
                 Use My Location
               </Button>
-              <p className="mt-2 text-sm text-gray-600">
+              <p className="mt-2 text-sm text-gray-400">
                 Selected Location:{" "}
-                <span className="font-medium">{location}</span>
+                <span className="text-gray-200 font-medium">{location}</span>
               </p>
             </>
           )}
+
           <Button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition"
+            className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition"
           >
             {isLogin ? "Login" : "Signup"}
           </Button>
         </form>
+
         <Button
-          type="submit"
+          type="button"
           onClick={() => setIsLogin(!isLogin)}
-          className="w-full mt-4 bg-gray-100 text-blue-600 py-2 px-4 rounded-md hover:bg-gray-200 transition"
+          className="w-full mt-4 bg-gray-700 text-blue-400 py-3 rounded-lg hover:bg-gray-600 transition"
         >
           Switch to {isLogin ? "Signup" : "Login"}
         </Button>

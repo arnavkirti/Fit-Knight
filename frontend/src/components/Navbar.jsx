@@ -24,25 +24,26 @@ const Navbar = () => {
   };
   getProfilePic();
   return (
-    <nav className="bg-gray-800 text-white p-4">
-      <div className="container mx-auto flex justify-between items-center">
-        {/* Links */}
-        <div className="flex items-center space-x-6">
-          <Link to={`/dashboard`} className="hover:text-gray-300">
+    <nav className="bg-gradient-to-br from-gray-900 via-gray-800 to-black text-gray-100 shadow-md">
+      <div className="container mx-auto flex justify-between items-center p-4">
+        <div className="flex items-center space-x-8">
+          <Link
+            to={`/dashboard`}
+            className="text-lg font-medium hover:text-blue-400 transition"
+          >
             Dashboard
           </Link>
           <Link
             to={`/notifications`}
-            className="hover:text-gray-300"
+            className="text-lg font-medium hover:text-blue-400 transition"
           >
             Notifications
           </Link>
         </div>
 
-        {/* User Profile */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-6">
           <div
-            className="w-10 h-10 rounded-full overflow-hidden cursor-pointer"
+            className="w-12 h-12 rounded-full overflow-hidden border-2 border-blue-500 cursor-pointer hover:opacity-90 transition"
             onClick={() => navigate("/profile")}
           >
             <img
@@ -51,9 +52,10 @@ const Navbar = () => {
               className="w-full h-full object-cover"
             />
           </div>
+
           <button
             onClick={logout}
-            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md"
+            className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-lg font-medium shadow-sm transition"
           >
             Logout
           </button>
