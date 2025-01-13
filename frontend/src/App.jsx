@@ -15,7 +15,7 @@ function App() {
         <Route path="/api/:role" element={<AuthPage />} />
         <Route path="/dashboard" element={<Dashboard />}></Route>
         <Route path="/profile" element={<Profile />}></Route>
-        <Route path="/groups" element={<Group />}></Route>
+        <Route path={`/group/:groupId`} element={<Group />}></Route>
         <Route path="/notifications" element={<Notification />}></Route>
       </Routes>
     </Router>

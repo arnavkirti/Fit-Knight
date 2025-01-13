@@ -19,7 +19,7 @@ router.post("/signup",upload.single("profilePicture") , userSignup); //tested
 router.post("/login", userLogin); //tested
 
 // dashboard routes
-router.get("/dashboard/recommended-buddies", getRecommendedBuddies); //tested 
+router.get("/dashboard/recommended-buddies",verifyUserToken, getRecommendedBuddies); //tested 
 router.get("/dashboard/available-groups", verifyUserToken, getAvailableGroups);
 router.get("/dashboard/user-group", verifyUserToken, getUserGroup); //tested
 router.post("/dashboard/join-group", verifyUserToken, joinGroup); 
@@ -27,7 +27,7 @@ router.post("/dashboard/leave-group", verifyUserToken, leaveGroup);
 
 // profile routes
 router.get("/profile", verifyUserToken, userProfile); //tested
-router.post("/profile/update", verifyUserToken, updateUserProfile); //tested
+router.post("/profile/update", verifyUserToken, upload.single("profilePicture"), updateUserProfile); //tested
 
 
 module.exports = router;

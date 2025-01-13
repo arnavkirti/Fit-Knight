@@ -2,7 +2,6 @@ const User = require("../modals/User");
 const Group = require("../modals/Group");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const pinata = require("../middleware/cloudConfig");
 
 require("dotenv").config();
 
@@ -10,16 +9,7 @@ require("dotenv").config();
 exports.adminSignup = async (req, res) => {
   try {
     const { username, password, email, phone, role } = req.body;
-    const file = req.file;
-
-    const metadata = { name: file.orignalname };
-    const readableStream = file.buffer;
-
-    const pinataResult = await pinata.pinFileToIPFS(readableStream, {
-      pinataMetadata: metadata,
-    });
-
-    const ipfsUrl = `https://sapphire-active-finch-862.mypinata.cloud/ipfs/${pinataResult.IpfsHash}`;
+    const file = req.file.path;
 
     // validate with zod
     const validationResult = User.validateUser(req.body);
@@ -36,7 +26,7 @@ exports.adminSignup = async (req, res) => {
       username,
       password,
       role,
-      profilePicture: ipfsUrl,
+      profilePicture: file,
     });
 
     await newAdmin.save();
@@ -343,6 +333,10 @@ exports.updateAdminProfile = async (req, res) => {
     const admin = await User.findById(adminId);
     if (!admin) {
       return res.status(404).json({ error: "Admin not found" });
+    }
+
+    if (req.file) {
+      admin.profilePicture = req.file.path;
     }
 
     Object.assign(admin, updatedProfile);

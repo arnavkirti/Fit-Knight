@@ -60,8 +60,8 @@ exports.userLogin = async (req, res) => {
 // dashboard routes
 exports.getRecommendedBuddies = async (req, res) => {
   try {
-    const { username } = req.body;
-    const user = await User.findOne({ username });
+    const userId = req.userId;
+    const user = await User.findById(userId);
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
@@ -71,7 +71,7 @@ exports.getRecommendedBuddies = async (req, res) => {
     const { fitnessGoals = "", workoutPreferences = [] } = fitnessDetails;
 
     const query = {
-      username: { $ne: username },
+      _id: { $ne: userId },
       "fitnessDetails.fitnessGoals": { $regex: fitnessGoals, $options: "i" },
       "fitnessDetails.workoutPreferences": { $in: workoutPreferences },
     };
@@ -105,17 +105,10 @@ exports.getRecommendedBuddies = async (req, res) => {
 
 exports.getAvailableGroups = async (req, res) => {
   try {
-    const userId = req.userId;
-    const { maxDistance } = req.body;
-
-    // validate maxDistance
-    const maxDist = parseInt(maxDistance, 10);
-    if (isNaN(maxDist) || maxDist <= 0) {
-      return res.status(400).json({ error: "Invalid maxDistance value" });
-    }
+    const userid = req.userId;
 
     // find user
-    const user = await User.findById(userId);
+    const user = await User.findById(userid);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -134,7 +127,7 @@ exports.getAvailableGroups = async (req, res) => {
             type: "Point",
             coordinates: location,
           },
-          $maxDistance: maxDist,
+          $maxDistance: 10000, 
         },
       },
     };
@@ -148,7 +141,7 @@ exports.getAvailableGroups = async (req, res) => {
       return res.status(200).json({ message: "No groups found", groups: [] });
     }
 
-    res.json(groups);
+    res.status(200).json(groups);
   } catch (err) {
     res
       .status(500)
@@ -315,6 +308,10 @@ exports.updateUserProfile = async (req, res) => {
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
+    }
+
+    if(req.file){
+      user.profilePicture = req.file.path;
     }
 
     Object.assign(user, updatedProfile);

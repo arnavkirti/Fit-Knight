@@ -6,7 +6,12 @@ require("dotenv").config();
 
 const app = express();
 const http = require("http").Server(app);
-const io = new Server(http);
+const io = new Server(http, {
+  cors: {
+    origin: "http://localhost:5173/",
+    credentials: true,
+  },
+});
 //mongoDB connection
 mongoose
   .connect(process.env.MONGODB_URI)

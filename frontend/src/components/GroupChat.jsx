@@ -18,7 +18,7 @@ const GroupChat = ({ groupId, username }) => {
     });
 
     // listen for new mesages
-    newSocket.on("recieveMessage", (message) => {
+    newSocket.on("message", (message) => {
       setMessages((prev) => [...prev, message]);
     });
 
@@ -65,3 +65,5 @@ const GroupChat = ({ groupId, username }) => {
     </div>
   );
 };
+
+export default GroupChat;

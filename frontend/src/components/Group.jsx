@@ -3,8 +3,11 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "@/axiosConfig";
 import Navbar from "./Navbar";
+import { useParams, useNavigate } from "react-router-dom";
 
-const Group = ({ groupId }) => {
+const Group = () => {
+  const {groupId} = useParams();
+  const navigate = useNavigate();
   const [groupData, setGroupData] = useState(null);
 
   const fetchGroupData = async () => {

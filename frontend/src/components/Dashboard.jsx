@@ -4,7 +4,7 @@
 
 import React, { useEffect, useState } from "react";
 import axiosInstance from "@/axiosConfig";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import CreateGroupPopup from "@/components/CreateGroupPopup";
 import Navbar from "./Navbar";
 
@@ -29,8 +29,9 @@ const Dashboard = () => {
       const [buddiesResponse, groupsResponse, groupResponse] =
         await Promise.all([
           axiosInstance.get("/api/user/dashboard/recommended-buddies"),
-          axiosInstance.get("/api/user/dashboard/available-groups", {
-            maxDistance: 10000,
+          axiosInstance.get("/api/user/dashboard/available-groups",
+          { 
+            "maxDistance": "10000",
           }),
           axiosInstance.get("/api/user/dashboard/user-group"),
         ]);
@@ -127,7 +128,13 @@ const Dashboard = () => {
   };
 
   const handleGroupClick = (adminGroup) => {
-    navigate(`/group/${adminGroup}`); // Redirect to group page
+    // navigate(`/group/${adminGroup.groups}`); // Redirect to group page
+    if (role === "Organizer") {
+      // <Link to={`/group/${adminGroup.groups}`}></Link>;
+      navigate(`/group/${adminGroup.groups}`);
+    } else {
+      <Link to={`group/${userGroup.group}`}></Link>;
+    }
   };
 
   // Accept or reject join requests (admin)

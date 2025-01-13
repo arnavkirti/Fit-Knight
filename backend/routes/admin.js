@@ -24,11 +24,7 @@ router.post("/login", adminLogin); //tested
 router.post("/dashboard/add-group", verifyAdminToken, addGroup); // tested
 router.get("/dashboard/group", verifyAdminToken, getGroup); //tested
 router.get("/dashboard/join-requests/:groupId", getJoinRequests); //tested
-router.post(
-  "/dashboard/update-join-request",
-  verifyAdminToken,
-  updateJoinRequest
-);
+router.post("/dashboard/update-join-request" ,verifyAdminToken ,updateJoinRequest); 
 router.delete("/dashboard/delete-group", verifyAdminToken, deleteGroup); //tested
 
 // group routes
@@ -37,6 +33,6 @@ router.put("/update-group", verifyAdminToken, updateGroupDetails);
 
 //profile routes
 router.get("/profile", verifyAdminToken, adminProfile); // tested
-router.post("/profile/update", verifyAdminToken, updateAdminProfile); // tested
+router.post("/profile/update", verifyAdminToken ,upload.single("profilePicture") , updateAdminProfile); // tested
 
 module.exports = router;
