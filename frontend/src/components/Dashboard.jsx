@@ -130,13 +130,13 @@ const Dashboard = () => {
     }
   };
 
-  const handleGroupClick = (adminGroup) => {
+  const handleGroupClick = () => {
     // navigate(`/group/${adminGroup.groups}`); // Redirect to group page
     if (role === "Organizer") {
-      // <Link to={`/group/${adminGroup.groups}`}></Link>;
-      navigate(`/group/${adminGroup.groups}`);
+      // <Link to={`/group-info/${adminGroup.groups}`}></Link>;
+      navigate(`/group-info/${adminGroup.groups}`);
     } else {
-      <Link to={`group/${userGroup.group}`}></Link>;
+      <Link to={`group-info/${userGroup.group}`}></Link>;
     }
   };
 

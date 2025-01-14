@@ -4,7 +4,6 @@
       - admin - activities organized by groups or Daily goals
 4. Group-
     - GroupChat logic
-    - members list with profile info
     - Group details frontend (activityType, schedule, location, description)
 5. Notification-
     - add logic to fetch notifications on specific events

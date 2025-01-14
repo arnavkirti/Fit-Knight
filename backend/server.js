@@ -32,7 +32,7 @@ app.use("/api/notification", require("./routes/notification"));
 //socket.io for group chat
 const groupMessages = {};
 io.on("connection", (socket) => {
-  console.log("A user connected");
+  console.log(`${socket.id} user just connected!`);
 
   socket.on("joinGroup", ({ groupId }) => {
     socket.join(groupId);
