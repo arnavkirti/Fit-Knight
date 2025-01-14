@@ -20,7 +20,7 @@ router.post("/login", userLogin); //tested
 
 // dashboard routes
 router.get("/dashboard/recommended-buddies",verifyUserToken, getRecommendedBuddies); //tested 
-router.get("/dashboard/available-groups", verifyUserToken, getAvailableGroups);
+router.post("/dashboard/available-groups", verifyUserToken, getAvailableGroups); //tested
 router.get("/dashboard/user-group", verifyUserToken, getUserGroup); //tested
 router.post("/dashboard/join-group", verifyUserToken, joinGroup); 
 router.post("/dashboard/leave-group", verifyUserToken, leaveGroup); 

@@ -1,7 +1,3 @@
-// add logic to make recommended buddies card
-// add logic to make available groups card
-// test all endpoints
-
 import React, { useEffect, useState } from "react";
 import axiosInstance from "@/axiosConfig";
 import { Link, useNavigate } from "react-router-dom";
@@ -26,22 +22,19 @@ const Dashboard = () => {
   // fetch user data
   const fetchUserData = async () => {
     try {
-      const [buddiesResponse, groupsResponse, groupResponse] =
-        await Promise.all([
-          axiosInstance.get("/api/user/dashboard/recommended-buddies"),
-          axiosInstance.get("/api/user/dashboard/available-groups", {
-            maxDistance: "10000",
-          }),
-          axiosInstance.get("/api/user/dashboard/user-group"),
-        ]);
-      setRecommendedBuddies(buddiesResponse.data);
-      setAvailableGroups(groupsResponse.data);
-      setUserGroup(groupResponse.data); // null if not part of any group
-      console.log([
-        buddiesResponse.data,
-        groupsResponse.data,
-        groupResponse.data,
-      ]);
+      const groups = await axiosInstance.post(
+        "/api/user/dashboard/available-groups",
+        {
+          maxDistance: "10000",
+        }
+      );
+      setAvailableGroups(groups.data);
+      const buddies = await axiosInstance.get(
+        "/api/user/dashboard/recommended-buddies"
+      );
+      setRecommendedBuddies(buddies.data);
+      const group = await axiosInstance.get("/api/user/dashboard/user-group");
+      setUserGroup(group.data); // null if not part of any group
     } catch (error) {
       console.error(
         "Error:",
@@ -49,6 +42,7 @@ const Dashboard = () => {
       );
     }
   };
+  // console.log([userGroup, recommendedBuddies, availableGroups]);
 
   // fetch admin data
   const fetchAdminData = async () => {
@@ -178,10 +172,6 @@ const Dashboard = () => {
   const closePopup = () => {
     setPopupOpen(false);
   };
-  console.log(adminGroup);
-  console.log(availableGroups);
-  console.log(recommendedBuddies);
-  console.log(userGroup);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-gray-100">
@@ -246,6 +236,9 @@ const Dashboard = () => {
                         <div className="flex justify-between items-center">
                           <p className="text-xl font-bold text-blue-400">
                             {group.name}
+                          </p>
+                          <p className="text-lg font-normal text-blue-300">
+                            {group.description}
                           </p>
                           <button
                             onClick={() => joinGroup(group._id)}

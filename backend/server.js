@@ -8,7 +8,7 @@ const app = express();
 const http = require("http").Server(app);
 const io = new Server(http, {
   cors: {
-    origin: "http://localhost:5173/",
+    origin: "http://localhost:5173",
     credentials: true,
   },
 });

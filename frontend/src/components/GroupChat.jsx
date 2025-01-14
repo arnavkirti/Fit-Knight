@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Navbar from "./Navbar";
 import { io } from "socket.io-client";
 
 const GroupChat = ({ groupId, username }) => {
@@ -7,7 +8,9 @@ const GroupChat = ({ groupId, username }) => {
   const [newMessage, setNewMessage] = useState("");
 
   useEffect(() => {
-    const newSocket = io("http://localhost:5000");
+    const newSocket = io("http://localhost:5000", {
+      autoConnect: true,
+    });
     setSocket(newSocket);
 
     newSocket.emit("joinGroup", { groupId }); // join group room
@@ -22,6 +25,10 @@ const GroupChat = ({ groupId, username }) => {
       setMessages((prev) => [...prev, message]);
     });
 
+    newSocket.on("connect_error", (err) => {
+      console.error(err.message);
+    });
+
     return () => newSocket.disconnect();
   }, [groupId]);
 
@@ -33,33 +40,36 @@ const GroupChat = ({ groupId, username }) => {
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen p-6">
-      <div className="bg-white shadow-md rounded-lg p-6 max-w-3xl mx-auto">
-        <h1 className="text-2xl font-bold text-center mb-4">Group Chat</h1>
-        <div className="h-96 overflow-y-scroll bg-gray-200 p-4 rounded-lg mb-4">
-          {messages.map((msg, index) => (
-            <div key={index} className="mb-2">
-              <span className="font-bold">{msg.username}:</span> {msg.message}
-              <small className="text-gray-500 ml-2">
-                {new Date(msg.timestamp).toLocaleTimeString()}
-              </small>
-            </div>
-          ))}
-        </div>
-        <div className="flex">
-          <input
-            type="text"
-            className="flex-grow border border-gray-300 rounded-lg px-4 py-2"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="Type your message..."
-          />
-          <button
-            className="ml-2 bg-blue-500 text-white px-4 py-2 rounded-lg"
-            onClick={sendMessage}
-          >
-            Send
-          </button>
+    <div>
+      <Navbar />
+      <div className="bg-gray-100 min-h-screen p-6">
+        <div className="bg-white shadow-md rounded-lg p-6 max-w-3xl mx-auto">
+          <h1 className="text-2xl font-bold text-center mb-4">Group Chat</h1>
+          <div className="h-96 overflow-y-scroll bg-gray-200 p-4 rounded-lg mb-4">
+            {messages.map((msg, index) => (
+              <div key={index} className="mb-2">
+                <span className="font-bold">{msg.username}:</span> {msg.message}
+                <small className="text-gray-500 ml-2">
+                  {new Date(msg.timestamp).toLocaleTimeString()}
+                </small>
+              </div>
+            ))}
+          </div>
+          <div className="flex">
+            <input
+              type="text"
+              className="flex-grow border border-gray-300 rounded-lg px-4 py-2"
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              placeholder="Type your message..."
+            />
+            <button
+              className="ml-2 bg-blue-500 text-white px-4 py-2 rounded-lg"
+              onClick={sendMessage}
+            >
+              Send
+            </button>
+          </div>
         </div>
       </div>
     </div>

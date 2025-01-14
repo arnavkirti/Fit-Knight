@@ -113,7 +113,7 @@ exports.getAvailableGroups = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    const {coordinates} = user.location;
+    const location = user.location?.coordinates;
     if (!location || location.length !== 2) {
       return res
         .status(400)
@@ -125,7 +125,7 @@ exports.getAvailableGroups = async (req, res) => {
         $near: {
           $geometry: {
             type: "Point",
-            coordinates: coordinates,
+            coordinates: location,
           },
           $maxDistance: 10000, 
         },
