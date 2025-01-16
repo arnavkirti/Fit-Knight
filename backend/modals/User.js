@@ -27,7 +27,7 @@ const userZodSchema = z.object({
       fitnessGoals: z.string().optional(),
       workoutPreferences: z.array(z.string()).optional(),
       availability: z.string().optional(),
-      achievements: z.array(z.string()).optional(),
+      achievements: z.string().optional().default(""),
     })
     .optional(),
   about: z.string().optional(),

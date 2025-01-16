@@ -53,9 +53,10 @@ const Dashboard = () => {
       setAdminGroup(groupResponse.data);
       const groupid = groupResponse.data.groups;
       const requestsResponse = await axiosInstance.get(
-        `/api/admin/dashboard/join-requests?groupId=${groupid}`
+        `/api/admin/dashboard/join-requests/${groupid}`
       );
-      setJoinRequests(requestsResponse.data);
+      setJoinRequests(requestsResponse.data.joinRequests);
+      console.log(groupResponse.data, requestsResponse.data);
     } catch (error) {
       console.error(
         "Error:",
@@ -130,16 +131,19 @@ const Dashboard = () => {
       // <Link to={`/group-info/${adminGroup.groups}`}></Link>;
       navigate(`/group-info/${adminGroup.groups}`);
     } else {
-      <Link to={`group-info/${userGroup.group}`}></Link>;
+      navigate(`group-info/${userGroup.group}`);
     }
   };
 
   // Accept or reject join requests (admin)
-  const updateJoinRequest = async (requestId, action) => {
+  const updateJoinRequest = async (adminGroup, requestId, action) => {
     try {
+      const groupid = adminGroup.groups;
+      console.log(groupid, requestId, action);
       await axiosInstance.post(`/api/admin/dashboard/update-join-request`, {
-        requestId,
-        action,
+        groupId: groupid,
+        requestId: requestId,
+        status: action,
       });
       alert(
         `${action === "accept" ? "Accepted" : "Rejected"} request successfully`
@@ -292,14 +296,12 @@ const Dashboard = () => {
                         className="p-6 bg-gray-800 rounded-lg shadow-md hover:bg-gray-700 transition"
                       >
                         <div className="flex justify-between items-center">
-                          <p className="text-xl font-medium">
-                            {request.userName}
-                          </p>
+                          <p className="text-xl font-medium">{request._id}</p>
                         </div>
                         <div className="mt-4 flex space-x-4">
                           <button
                             onClick={() =>
-                              updateJoinRequest(request._id, "accept")
+                              updateJoinRequest(adminGroup, request._id, "accept")
                             }
                             className="px-6 py-3 bg-green-500 text-white font-medium rounded-lg hover:bg-green-600 transition"
                           >
@@ -307,10 +309,10 @@ const Dashboard = () => {
                           </button>
                           <button
                             onClick={() =>
-                              updateJoinRequest(request._id, "reject")
+                              updateJoinRequest(adminGroup, request._id, "reject")
                             }
                             className="px-6 py-3 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 transition"
-                          >
+                          > 
                             Reject
                           </button>
                         </div>

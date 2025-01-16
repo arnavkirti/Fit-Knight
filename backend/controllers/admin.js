@@ -135,14 +135,11 @@ exports.getGroup = async (req, res) => {
 
 exports.getJoinRequests = async (req, res) => {
   try {
-    const { groupId } = req.query; // query params
+    const { groupId } = req.params; // query params http://localhost:5000/api/admin/join-requests?groupId=123
     if (!groupId) {
       return res.status(400).json({ error: "Group ID is required" });
     }
-    const group = await Group.findById(groupId).populate(
-      "joinRequests.userId",
-      "username profilePicture"
-    );
+    const group = await Group.findById(groupId);
 
     if (!group) {
       return res.status(404).json({ error: "Group not found" });
@@ -189,8 +186,7 @@ exports.deleteGroup = async (req, res) => {
 exports.updateJoinRequest = async (req, res) => {
   try {
     const adminId = req.adminId;
-    const { groupId, requestId } = req.params;
-    const { status } = req.body;
+    const { groupId, requestId, status } = req.body;
 
     if (!adminId) {
       return res.status(401).json({ error: "Unauthorized access" });
@@ -209,7 +205,7 @@ exports.updateJoinRequest = async (req, res) => {
     if (status === "accept") {
       group.members.push({ userId: joinRequest.userId });
       joinRequest.status = "accepted";
-    } else if ((status = "reject")) {
+    } else if ((status === "reject")) {
       joinRequest.status = "rejected";
     } else {
       return res.status(400).json({ error: "Invalid status" });
@@ -296,6 +292,8 @@ exports.adminProfile = async (req, res) => {
       //contact info
       email: admin.email,
       phone: admin.phone,
+      revealContactInfo: admin.revealContactInfo,
+      about: admin.about,
     });
   } catch (err) {
     res
@@ -319,7 +317,7 @@ exports.updateAdminProfile = async (req, res) => {
       "phone",
       "profilePicture",
       "about",
-      "fitnessDetails",
+      "revealContactInfo",
     ];
     const updates = Object.keys(updatedProfile);
     const isValidUpdate = updates.every((field) =>

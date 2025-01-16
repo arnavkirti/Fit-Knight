@@ -22,7 +22,7 @@ router.post("/login", userLogin); //tested
 router.get("/dashboard/recommended-buddies",verifyUserToken, getRecommendedBuddies); //tested 
 router.post("/dashboard/available-groups", verifyUserToken, getAvailableGroups); //tested
 router.get("/dashboard/user-group", verifyUserToken, getUserGroup); //tested
-router.post("/dashboard/join-group", verifyUserToken, joinGroup); 
+router.post("/dashboard/join-group", verifyUserToken, joinGroup); // tested
 router.post("/dashboard/leave-group", verifyUserToken, leaveGroup); 
 
 // profile routes

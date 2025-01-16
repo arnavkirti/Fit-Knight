@@ -1,4 +1,3 @@
-// handle frontend to update profile
 // also let user update profile picture
 
 import React, { useState, useEffect } from "react";
@@ -40,20 +39,34 @@ const Profile = () => {
       const route = `/api/${
         role === "BuddyFinder" ? "user" : "admin"
       }/profile/update`;
-
-      const reqbody = {
-        updatedProfile: {
-          username: formData.username,
-          email: formData.email,
-          phone: formData.phone,
-          about: formData.about,
-          fitnessDetails: {
-            fitnessGoals: formData.fitnessGoals,
-            achievements: formData.achivements,
+      let reqbody = {};
+      if (role === "BuddyFinder") {
+        reqbody = {
+          updatedProfile: {
+            username: formData.username,
+            email: formData.email,
+            phone: formData.phone,
+            about: formData.about,
+            profilePicture: formData.profilePicture,
+            fitnessDetails: {
+              fitnessGoals: formData.fitnessGoals,
+              achievements: formData.achivements,
+            },
+            revealContactInfo: formData.revealContactInfo,
           },
-          revealContactInfo: formData.revealContactInfo,
-        },
-      };
+        };
+      } else {
+        reqbody = {
+          updatedProfile: {
+            username: formData.username,
+            email: formData.email,
+            phone: formData.phone,
+            about: formData.about,
+            profilePicture: formData.profilePicture,
+            revealContactInfo: formData.revealContactInfo,
+          },
+        };
+      }
       const response = await axiosInstance.post(route, reqbody);
       console.log(response.data);
       setProfileData(response.data); // update the profile data
@@ -116,6 +129,18 @@ const Profile = () => {
                       className="w-full bg-gray-700 border border-gray-600 rounded-lg p-3 text-white focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
+                  {/* <div className="flex flex-col">
+                    <label className="text-gray-400 font-medium mb-2">
+                      Profile Picture
+                    </label>
+                    <input
+                      type="file"
+                      name="profilePicture"
+                      value={formData.profilePicture}
+                      onChange={handleInputChange}
+                      className="w-full bg-gray-700 border border-gray-600 rounded-lg p-3 text-white focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div> */}
                   {role === "BuddyFinder" && (
                     <>
                       <div className="flex flex-col">
