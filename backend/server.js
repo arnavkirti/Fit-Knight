@@ -2,6 +2,8 @@ const express = require("express");
 const { Server } = require("socket.io");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const { createNotification } = require("./controllers/notification");
+const Group = require("./models/Group");
 require("dotenv").config();
 
 const app = express();
@@ -41,13 +43,17 @@ io.on("connection", (socket) => {
     socket.emit("previousMessages", groupMessages[groupId] || []);
   });
 
-  socket.on("sendMessage", ({ groupId, message, username }) => {
+  socket.on("sendMessage",async ({ groupId, message, username }) => {
     const newMessage = { username, message, timestamp: new Date() };
 
     if (!groupMessages[groupId]) groupMessages[groupId] = [];
     groupMessages[groupId].push(newMessage);
 
+    const group = await Group.findById(groupId);
     io.to(groupId).emit("message", newMessage);
+    group.members.forEach((member) => {
+
+    })
   });
 
   socket.on("disconnect", () => {

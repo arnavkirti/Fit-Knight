@@ -52,7 +52,9 @@ exports.userLogin = async (req, res) => {
         expiresIn: "3h",
       }
     );
-    res.status(200).json({ message: "Login successful", token, role });
+    res
+      .status(200)
+      .json({ message: "Login successful", token, role, userId: user._id });
   } catch (err) {
     res.status(500).json({ error: "Login error", details: err.message });
   }
@@ -128,7 +130,7 @@ exports.getAvailableGroups = async (req, res) => {
             type: "Point",
             coordinates: location,
           },
-          $maxDistance: 10000, 
+          $maxDistance: 10000,
         },
       },
     };
@@ -180,7 +182,7 @@ exports.joinGroup = async (req, res) => {
       return res.status(400).json({ error: "Request already exists" });
     }
 
-    group.joinRequests.push({ user: userId });
+    group.joinRequests.push({ user: userId, username: user.username });
     await group.save();
 
     res.json({ message: "Request sent successfully" });
@@ -308,7 +310,7 @@ exports.updateUserProfile = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    if(req.file){
+    if (req.file) {
       user.profilePicture = req.file.path;
     }
 

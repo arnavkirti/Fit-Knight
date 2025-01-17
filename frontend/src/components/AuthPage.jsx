@@ -41,7 +41,11 @@ const AuthPage = () => {
       );
       console.log(response.data);
       localStorage.setItem("role", response.data.role);
-      localStorage.setItem("username", response.data.username);
+      if (role === "user") {
+        localStorage.setItem("userId", response.data.userId);
+      } else {
+        localStorage.setItem("adminId", response.data.adminId);
+      }
       localStorage.setItem("token", response.data.token);
       navigate("/dashboard");
     } catch (error) {

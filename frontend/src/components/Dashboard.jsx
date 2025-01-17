@@ -6,6 +6,8 @@ import Navbar from "./Navbar";
 
 const Dashboard = () => {
   const role = localStorage.getItem("role");
+  const userId = localStorage.getItem("userId");
+  const adminId = localStorage.getItem("adminId");
   const [isPopupOpen, setPopupOpen] = useState(false);
 
   // for users
@@ -32,6 +34,13 @@ const Dashboard = () => {
       const buddies = await axiosInstance.get(
         "/api/user/dashboard/recommended-buddies"
       );
+      if (buddies.data.length > 0) {
+        await axiosInstance.post("/api/notification/", {
+          type: "buddy_match",
+          userId: userId,
+          message: "You have a new buddy match!",
+        });
+      }
       setRecommendedBuddies(buddies.data);
       const group = await axiosInstance.get("/api/user/dashboard/user-group");
       setUserGroup(group.data); // null if not part of any group
@@ -76,6 +85,11 @@ const Dashboard = () => {
         "/api/user/dashboard/join-group",
         { groupId }
       );
+      await axiosInstance.post("/api/notification/", {
+        type: "group_join",
+        userId: userId,
+        message: "You have sent a group join request",
+      });
       alert("Request sent successfully to join the group");
       setAvailableGroups((prev) =>
         prev.filter((group) => group._id !== groupId)
@@ -145,6 +159,19 @@ const Dashboard = () => {
         requestId: requestId,
         status: action,
       });
+      if (action === "accept") {
+        await axiosInstance.post("/api/notification/", {
+          type: "group_join",
+          userId: requestId,
+          message: "Your group join request has been accepted",
+        });
+      } else {
+        await axiosInstance.post("/api/notification/", {
+          type: "group_join",
+          userId: requestId,
+          message: "Your group join request has been rejected",
+        });
+      }
       alert(
         `${action === "accept" ? "Accepted" : "Rejected"} request successfully`
       );
@@ -301,7 +328,11 @@ const Dashboard = () => {
                         <div className="mt-4 flex space-x-4">
                           <button
                             onClick={() =>
-                              updateJoinRequest(adminGroup, request._id, "accept")
+                              updateJoinRequest(
+                                adminGroup,
+                                request._id,
+                                "accept"
+                              )
                             }
                             className="px-6 py-3 bg-green-500 text-white font-medium rounded-lg hover:bg-green-600 transition"
                           >
@@ -309,10 +340,14 @@ const Dashboard = () => {
                           </button>
                           <button
                             onClick={() =>
-                              updateJoinRequest(adminGroup, request._id, "reject")
+                              updateJoinRequest(
+                                adminGroup,
+                                request._id,
+                                "reject"
+                              )
                             }
                             className="px-6 py-3 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 transition"
-                          > 
+                          >
                             Reject
                           </button>
                         </div>

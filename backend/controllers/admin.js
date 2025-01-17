@@ -51,10 +51,12 @@ exports.adminLogin = async (req, res) => {
       { id: admin._id, role: admin.role },
       process.env.JWT_SECRET,
       {
-        expiresIn: "1h",
+        expiresIn: "3h",
       }
     );
-    res.status(200).json({ message: "Login successful", token, role });
+    res
+      .status(200)
+      .json({ message: "Login successful", token, role, userId: admin._id });
   } catch (err) {
     res.status(500).json({ error: "Login error", details: err.message });
   }
@@ -205,7 +207,7 @@ exports.updateJoinRequest = async (req, res) => {
     if (status === "accept") {
       group.members.push({ userId: joinRequest.userId });
       joinRequest.status = "accepted";
-    } else if ((status === "reject")) {
+    } else if (status === "reject") {
       joinRequest.status = "rejected";
     } else {
       return res.status(400).json({ error: "Invalid status" });

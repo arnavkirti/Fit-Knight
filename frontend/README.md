@@ -2,11 +2,8 @@
 1. Auth **
     - add google OAuth
 2. Dashboard
-    - user- 
-    1. //your group logic
     - admin
     1. //accept requests
-    2. test group chat
 3. Profile-
       - user - fitness history (activities, milestones)
       - admin - activities organized by groups or Daily goals

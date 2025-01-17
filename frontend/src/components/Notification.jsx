@@ -3,12 +3,18 @@ import axiosInstance from "@/axiosConfig";
 import Navbar from "./Navbar";
 
 export default function Notification() {
+  const role = localStorage.getItem("role");
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const response = await axiosInstance.get("/api/notifications");
+        let response = null;
+        if (role === "BuddyFinder") {
+          response = await axiosInstance.get("/api/notifications/fecth");
+        } else {
+          response = await axiosInstance.get("/api/notifications/fetch-admin");
+        }
         setNotifications(response.data);
       } catch (err) {
         console.error(err);
