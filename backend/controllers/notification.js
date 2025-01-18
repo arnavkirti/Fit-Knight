@@ -1,6 +1,6 @@
 // add zod validation
 // test apis
-const Notification = require("../models/Notification");
+const {Notification} = require("../modals/Notification");
 
 exports.createNotification = async (req, res) => {
   try {

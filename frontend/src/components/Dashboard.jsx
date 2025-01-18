@@ -145,7 +145,7 @@ const Dashboard = () => {
       // <Link to={`/group-info/${adminGroup.groups}`}></Link>;
       navigate(`/group-info/${adminGroup.groups}`);
     } else {
-      navigate(`group-info/${userGroup.group}`);
+      navigate(`/group-info/${userGroup.group}`);
     }
   };
 

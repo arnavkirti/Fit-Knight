@@ -2,8 +2,7 @@ const express = require("express");
 const { Server } = require("socket.io");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const { createNotification } = require("./controllers/notification");
-const Group = require("./models/Group");
+
 require("dotenv").config();
 
 const app = express();
@@ -30,7 +29,6 @@ app.use("/api/admin", require("./routes/admin"));
 app.use("/api/group", require("./routes/group"));
 app.use("/api/notification", require("./routes/notification"));
 
-
 //socket.io for group chat
 const groupMessages = {};
 io.on("connection", (socket) => {
@@ -43,24 +41,20 @@ io.on("connection", (socket) => {
     socket.emit("previousMessages", groupMessages[groupId] || []);
   });
 
-  socket.on("sendMessage",async ({ groupId, message, username }) => {
+  socket.on("sendMessage", async ({ groupId, message, username }) => {
     const newMessage = { username, message, timestamp: new Date() };
 
     if (!groupMessages[groupId]) groupMessages[groupId] = [];
     groupMessages[groupId].push(newMessage);
 
-    const group = await Group.findById(groupId);
     io.to(groupId).emit("message", newMessage);
-    group.members.forEach((member) => {
-
-    })
+    group.members.forEach((member) => {});
   });
 
   socket.on("disconnect", () => {
     console.log("A user disconnected");
   });
 });
-
 
 const PORT = process.env.PORT || 5000;
 http.listen(PORT, () => console.log(`Server running on port ${PORT}`));

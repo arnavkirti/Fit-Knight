@@ -1,10 +1,14 @@
 const express = require("express");
 const {
   createNotification,
-  fetchNotifications,
+  fetchUserNotifications,
+  fetchAdminNotifications,
   markRead,
 } = require("../controllers/notification");
-const { verifyUserToken, verifyAdminToken } = require("../middleware/authMiddleware");
+const {
+  verifyUserToken,
+  verifyAdminToken,
+} = require("../middleware/authMiddleware");
 const router = express.Router();
 
 router.post("/", createNotification);
