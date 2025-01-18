@@ -43,7 +43,7 @@ const Dashboard = () => {
       }
       setRecommendedBuddies(buddies.data);
       const group = await axiosInstance.get("/api/user/dashboard/user-group");
-      setUserGroup(group.data); // null if not part of any group
+      setUserGroup(group.data.group); // null if not part of any group
     } catch (error) {
       console.error(
         "Error:",
@@ -159,19 +159,19 @@ const Dashboard = () => {
         requestId: requestId,
         status: action,
       });
-      if (action === "accept") {
-        await axiosInstance.post("/api/notification/", {
-          type: "group_join",
-          userId: requestId,
-          message: "Your group join request has been accepted",
-        });
-      } else {
-        await axiosInstance.post("/api/notification/", {
-          type: "group_join",
-          userId: requestId,
-          message: "Your group join request has been rejected",
-        });
-      }
+      // if (action === "accept") {
+      //   await axiosInstance.post("/api/notification/", {
+      //     type: "group_join",
+      //     userId: requestId,
+      //     message: "Your group join request has been accepted",
+      //   });
+      // } else {
+      //   await axiosInstance.post("/api/notification/", {
+      //     type: "group_join",
+      //     userId: requestId,
+      //     message: "Your group join request has been rejected",
+      //   });
+      // }
       alert(
         `${action === "accept" ? "Accepted" : "Rejected"} request successfully`
       );

@@ -21,9 +21,11 @@ const groupZodSchema = z.object({
     .optional(),
   members: z
     .array(
-      z.string().refine((val) => mongoose.Types.ObjectId.isValid(val), {
-        message: "Member ID must be a valid ObjectId",
-      })
+      z.object(
+        z.string().refine((val) => mongoose.Types.ObjectId.isValid(val), {
+          message: "Member ID must be a valid ObjectId",
+        })
+      )
     )
     .optional()
     .default([]),
@@ -56,7 +58,12 @@ const groupSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
-    members: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    members: [
+      {
+        userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        username: { type: String },
+      },
+    ],
     joinRequests: [
       {
         userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },

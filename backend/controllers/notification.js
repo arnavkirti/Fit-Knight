@@ -6,11 +6,10 @@ exports.createNotification = async (req, res) => {
   try {
     const { userId, type, message } = req.body;
 
-    const notification = new Notification({
+    const notification = await Notification.create({
       userId,
       type,
       message,
-      data,
     });
     await notification.save();
 

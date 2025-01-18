@@ -189,7 +189,10 @@ exports.updateJoinRequest = async (req, res) => {
   try {
     const adminId = req.adminId;
     const { groupId, requestId, status } = req.body;
-
+    const user = await User.findById(requestId);
+    if(!user){
+      return res.status(404).json({error: "User not found"});
+    }
     if (!adminId) {
       return res.status(401).json({ error: "Unauthorized access" });
     }
@@ -205,8 +208,9 @@ exports.updateJoinRequest = async (req, res) => {
     }
 
     if (status === "accept") {
-      group.members.push({ userId: joinRequest.userId });
+      group.members.push({ userId: joinRequest._id, username: joinRequest.username });
       joinRequest.status = "accepted";
+      user.group.push(groupId);
     } else if (status === "reject") {
       joinRequest.status = "rejected";
     } else {

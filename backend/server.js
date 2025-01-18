@@ -48,7 +48,7 @@ io.on("connection", (socket) => {
     groupMessages[groupId].push(newMessage);
 
     io.to(groupId).emit("message", newMessage);
-    group.members.forEach((member) => {});
+    // group.members.forEach((member) => {});
   });
 
   socket.on("disconnect", () => {
